@@ -1,0 +1,76 @@
+.page_container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.register_form {
+    width: 400px;
+    margin: 50px auto;
+    background-color: white;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+.register_form h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.register_form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.register_form input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+.register_form button {
+    width: 30%;
+    padding: 10px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    background: #007BFF;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.register_form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.register_form #new_register_btn{
+    width:100%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+}
+
+.password_container {
+    position: relative;
+}
+
+.password-icon {
+    position: absolute;
+    top: 40%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}

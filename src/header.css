@@ -1,0 +1,114 @@
+/* Header container */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100vw;
+    min-height: 10vh;
+    background: linear-gradient(135deg, #f8f8f8, #e3e3e3);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    flex-wrap: wrap;
+}
+
+h1 {
+    margin: 0;
+    margin-left: 1rem;
+    font-size: 1.8rem;
+    color: #333;
+    min-width: 150px;
+}
+.header_btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+#login_form {
+    display: flex;
+    align-items: center;
+}
+
+header #login_form form {
+    display: flex;
+    margin-right: 1rem;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+header #login_form form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+header #login_form form input:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+.header_btn {
+    padding: 10px 15px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease-in-out;
+}
+
+#login_btn {
+    background-color: #ddd;
+}
+
+#register_btn {
+    background-color: rgb(189, 247, 248);
+}
+
+#profile_btn{
+    background-color: #ddd;
+    width: 40px;  /* Button size */
+    height: 40px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#login_btn:hover {
+    background-color: #bbb;
+}
+
+#register_btn:hover {
+    background-color: rgb(132, 225, 226);
+}
+
+#profile_btn:hover {
+    background-color: #bbb;
+}
+
+#logout_btn {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+#logout_btn:hover {
+    background-color: #cc0000;
+}
+
+#user_info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 1rem;
+}
+
+#user_info p {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+}
