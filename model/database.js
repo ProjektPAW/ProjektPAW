@@ -22,10 +22,17 @@ async function selectUserByUnameEmail(username,email) {
     );
 }
 
-async function selectUserByUsername(username,email) {
+async function selectUserByUsername(username) {
   return await pool.query(
-      "select * from users where username like $1 or email like $2",
-      [username,email]
+      "select * from users where username like $1",
+      [username]
+  );
+}
+
+async function selectUserById(id) {
+  return await pool.query(
+      "select * from users where id_user = $1",
+      [id]
   );
 }
 
@@ -33,4 +40,6 @@ async function selectUserByUsername(username,email) {
     pool,
     createUser,
     selectUserByUnameEmail,
+    selectUserByUsername,
+    selectUserById,
   }

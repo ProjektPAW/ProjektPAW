@@ -38,12 +38,19 @@ app.post("/register", async (req, res) => {
   auth.register(username, email, password,res);
 });
 
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  auth.login(username, password,res);
+});
+
+app.post("/checktoken", async (req, res) => {
+  const { token } = req.body;
+  auth.checkTokenExpired(token,res);
+});
 
 // Uruchomienie serwera
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-module.exports={
-  pool,
-}
+
