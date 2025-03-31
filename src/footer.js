@@ -14,9 +14,9 @@ function Footer() {
         <p>ProjectPAW@gmail.com</p>
       </div>
       <div className="footer_div">
-        <Link to="/"><h3><a href="#">Home Page</a></h3></Link>
+        <Link to="/"><h3>Home page</h3></Link>
         <h3><a href="#">Profile</a></h3>
-        <Link to="/register"><h3><a href="#">Create Account</a></h3></Link>
+        <Link to="/register"><h3>Create Account</h3></Link>
       </div>
     </footer>
   );
