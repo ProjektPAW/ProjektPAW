@@ -25,8 +25,10 @@ async function register(username,email,password,res){
 async function login(username,password,res) {
     try{
         const result = await db.selectUserByUsername(username);
-        if(result.rowCount==0)
+        if(result.rowCount==0){
             res.status(200).json({message:"Invalid username."});
+            return;
+        }
         const user = result.rows[0];
         const equal = await bcrypt.compare(password,user.password);
         if(equal==true){
@@ -38,10 +40,13 @@ async function login(username,password,res) {
                     allowInsecureKeySizes:true,
                     expiresIn:3600
                 });
-            res.status(200).json({message:"Login successful.",token:token})
+            res.status(200).json({message:"Login successful.",token:token,username:user.username,email:user.email});
+            return;
         }
-        else
+        else{
             res.status(200).json({message:"Invalid password"});
+            return;
+        }
     }
     catch (err) {
         res.status(500).json({ message: "Server error: " + err.message });
