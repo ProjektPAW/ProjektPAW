@@ -58,7 +58,7 @@ async function autenthicate(token) {
     try{
         const content = jwt.verify(token,process.env.JWT_SECRET);
         const result = await db.selectUserById(content.id);
-        if(result.rows[0].id_user==content.id && (content.exp*1000)<=Date.now())
+        if(result.rows[0].id_user==content.id && (content.exp*1000)>=Date.now())
             return true;
         return false;
     }
@@ -74,7 +74,7 @@ async function checkTokenExpired(token,res) {
         const result = await db.selectUserById(content.id);
         if(result.rows[0].id_user!=content.id)
             res.status(400).json({valid:false,message:"Invalid token"});
-        else if((content.exp*1000)<=Date.now())
+        else if((content.exp*1000)>=Date.now())
             res.status(200).json({valid:true,expired:false,message:"Token valid."});
         else
             res.status(200).json({valid:true,expired:true,message:"Token expired."});
