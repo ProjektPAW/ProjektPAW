@@ -4,12 +4,11 @@ import profileImg from "./public/imgs/profile.png";
 import {Outlet, Link} from 'react-router-dom';
 import {sendError, sendSuccess} from './toast'
 
-function Header() {
+function Header({ refr }) {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [isLogged, setIsLogged]=useState(
     ()=>{if(localStorage.getItem("jwtToken"))return true; return false;}
   );
-  
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,6 +35,7 @@ const handleLogin = async (e) => {
 
             setFormData({ username: "", password: "" });
             sendSuccess("Logged in successfully!");
+            refr();
           }
           else{
             sendError(data.message || "login failed.");
@@ -55,6 +55,7 @@ const handleLogout = async (e) => {
   localStorage.removeItem('email');
   sendSuccess("Loggout successfull!");
   setIsLogged(false);
+  refr();
 };
   return (
     <header>

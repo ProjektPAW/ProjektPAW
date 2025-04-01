@@ -2,21 +2,28 @@ import './App.css';
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client"
-import {BrowserRouter, Routes, Route} from "react-router-dom"
+import {BrowserRouter, Routes, Route,Navigate } from "react-router-dom"
 import Home from './home'
 import Register from './register'
+import Profile from './profile'
 import { ToastContainer} from 'react-toastify';
 import Header from "./header";
 import Footer from "./footer";
 
 function App() {
+  const [key, setKey] = useState(0);
+  function refr () {setKey((prevKey) => prevKey + 1);}
+
+  const isLoggedIn = localStorage.getItem("jwtToken") !== null;
+
   return (
     <BrowserRouter>
-    <Header/>
+    <Header refr={refr}/>
     <ToastContainer className="toast-position"/>
-      <Routes>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/register" element={<Register/>}/>
+      <Routes >
+        <Route path="/" element={<Home key={key}/>}/>
+        <Route path="/register" element={<Register key={key}/>}/>
+        <Route path="/profile"  element={isLoggedIn ? <Profile key={key} /> : <Navigate to="/" />} />
       </Routes>
       <Footer/>
     </BrowserRouter>
