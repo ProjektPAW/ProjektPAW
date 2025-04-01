@@ -58,12 +58,13 @@ async function autenthicate(token) {
     try{
         const content = jwt.verify(token,process.env.JWT_SECRET);
         const result = await db.selectUserById(content.id);
-        if(result.rows[0].id_user==content.id && content.exp<=Date.now())
+        if(result.rows[0].id_user==content.id && (content.exp*1000)<=Date.now())
             return true;
         return false;
     }
     catch(err){
-        console.log("JWT AUTH ERROR: "+err);
+        if(!err=="JsonWebTokenError: jwt must be provided")
+            console.log("JWT AUTH ERROR: "+err);
     }
 }
 
@@ -73,7 +74,7 @@ async function checkTokenExpired(token,res) {
         const result = await db.selectUserById(content.id);
         if(result.rows[0].id_user!=content.id)
             res.status(400).json({valid:false,message:"Invalid token"});
-        else if(content.exp<=Date.now())
+        else if((content.exp*1000)<=Date.now())
             res.status(200).json({valid:true,expired:false,message:"Token valid."});
         else
             res.status(200).json({valid:true,expired:true,message:"Token expired."});
@@ -84,9 +85,19 @@ async function checkTokenExpired(token,res) {
     }
 }
 
+async function getUser(token,res) {    
+  if(!await autenthicate(token))
+    return res.status(200).json({message:"Invalid token"});
+
+  const content = jwt.verify(token,process.env.JWT_SECRET);
+  const result = await db.selectUserById(content.id);
+  return res.json({ username: result.rows[0].username, email: result.rows[0].email });
+}
+
 module.exports={
     register,
     login,
     autenthicate,
     checkTokenExpired,
+    getUser
 }

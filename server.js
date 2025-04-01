@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
-const auth = require("./controlers/auth")
+const auth = require("./controlers/auth");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -44,10 +44,14 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/checktoken", async (req, res) => {
-  const { token } = req.body;
+  const token = req.headers.authorization;
   auth.checkTokenExpired(token,res);
 });
 
+app.get("/getuser", async (req, res) => {
+  const token=req.headers.authorization;
+  auth.getUser(token,res);
+});
 // Uruchomienie serwera
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
