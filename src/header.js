@@ -2,10 +2,14 @@ import './header.css';
 import React, { useState } from "react";
 import profileImg from "./public/imgs/profile.png";
 import {Outlet, Link} from 'react-router-dom';
+import {sendError, sendSuccess} from './toast'
 
 function Header() {
   const [formData, setFormData] = useState({ username: "", password: "" });
-  const [message, setMessage] = useState("");
+  const [isLogged, setIsLogged]=useState(
+    ()=>{if(localStorage.getItem("jwtToken"))return true; return false;}
+  );
+  
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -13,8 +17,6 @@ function Header() {
 
 const handleLogin = async (e) => {
   e.preventDefault();
-  setMessage("");
-
   try {
       const response = await fetch("http://localhost:5000/login", {
           method: "POST",
@@ -30,39 +32,41 @@ const handleLogin = async (e) => {
             localStorage.setItem('jwtToken', data.token);
             localStorage.setItem('username', data.username);
             localStorage.setItem('email', data.email);
+            setIsLogged(true);
 
-            setMessage("Logged in successfully!");
+            setFormData({ username: "", password: "" });
+            sendSuccess("Logged in successfully!");
           }
           else{
-            setMessage(data.message || "login failed.");
+            sendError(data.message || "login failed.");
           }
       } else {
-          setMessage(data.message || "login failed.");
+          sendError(data.message || "login failed.");
       }
   } catch (error) {
       console.error("Błąd sieci:", error);
-      setMessage("Cannot connect to server.");
+      sendError("Cannot connect to server.");
   }
 };
+
 const handleLogout = async (e) => {
   localStorage.removeItem('jwtToken');
   localStorage.removeItem('username');
   localStorage.removeItem('email');
-  setMessage("Loggout successfull!");
-
+  sendSuccess("Loggout successfull!");
+  setIsLogged(false);
 };
   return (
     <header>
-      <h1>Galeria</h1>
-      {!localStorage.getItem('jwtToken') ? (
+      <Link to="/"><h1>Galeria</h1></Link>
+      {!isLogged ? (
         <div id="login_form">
           <form onSubmit={handleLogin}>
             <input type="text" placeholder="Login"  name="username"  onChange={handleInputChange}/>
             <input type="password" name="password" onChange={handleInputChange} placeholder="Password" />
-            <button className="header_btn" id="login_btn">Login</button>
+            <button className="header_btn" id="login_btn" >Login</button>
             <Link to="/register"><button className="header_btn" id="register_btn">Register</button></Link>
           </form>
-          {message &&<p>{message}</p>}
         </div>
       ) : (
         <div id="user_info">

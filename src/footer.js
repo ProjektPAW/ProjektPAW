@@ -15,7 +15,7 @@ function Footer() {
       </div>
       <div className="footer_div">
         <Link to="/"><h3>Home page</h3></Link>
-        <h3><a href="#">Profile</a></h3>
+        <Link to="#"><h3>Profile</h3></Link>
         <Link to="/register"><h3>Create Account</h3></Link>
       </div>
     </footer>

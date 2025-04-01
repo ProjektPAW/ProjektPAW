@@ -1,9 +1,8 @@
 import "./register.css";
-import Header from "./header";
-import Footer from "./footer";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Import icons from react-icons
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {sendError, sendSuccess, sendWarning} from './toast'
 
 function Register() {
     const [type, setType] = useState('password');
@@ -14,7 +13,6 @@ function Register() {
         password: "",
         confirmPassword: ""
     });
-    const [message, setMessage] = useState("");
     const navigate = useNavigate();
 
     const handleToggle = () => {
@@ -33,14 +31,13 @@ function Register() {
     const handleSubmit = async (e) => {
         
         e.preventDefault();
-        setMessage("");
         if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
-            setMessage("All fields are required.");
+            sendWarning("All fields are required.");
             return;
         }
         
         if (formData.password !== formData.confirmPassword) {
-            setMessage("Passwords do not match.");
+            sendError("Passwords do not match.");
             return;
         }
         try {
@@ -53,28 +50,26 @@ function Register() {
             const data = await response.json();
 
             if (response.status === 200) {
-                setMessage(data.message || "Registration failed.");
+                sendError(data.message || "Registration failed.");
                 return;
             }
             else if (response.ok) {
-                setMessage("User registered successfully!");
+                sendSuccess("User registered successfully!");
                 setTimeout(() => navigate("/"), 2000);
                 return;
             } else {
-                setMessage(data.message || "Registration failed.");
+                sendError(data.message || "Registration failed.");
             }
         } catch (error) {
-            setMessage("Server error: " + error.message);
+            sendError("Server error: " + error.message);
         }
     };
 
     return (
         <div className="page_container">
-            <Header />
             <main className="content">
                 <div className="register_form">
                     <h2>Register</h2>
-                    {message && <p className="message">{message}</p>}
                     <form onSubmit={handleSubmit}>
                         <label>Login:</label>
                         <input type="text" name="username" onChange={handleChange} placeholder="Enter your login" />
@@ -114,7 +109,6 @@ function Register() {
                     </form>
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }

@@ -2,6 +2,11 @@
   text-align: center;
 }
 
+.toast-position {
+  top: 10rem !important;
+  display: inline-block;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
