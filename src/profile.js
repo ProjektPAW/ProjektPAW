@@ -19,7 +19,7 @@ function Profile() {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5000/getuser", {
+            .get("/api/getuser", {
                 headers: {
                 Authorization: localStorage.getItem("jwtToken"),
                 },
@@ -49,7 +49,7 @@ function Profile() {
         }
         try {
             axios
-            .post("http://localhost:5000/addphoto",formData, {
+            .post("/api/addphoto",formData, {
                 headers: {
                 Authorization: localStorage.getItem("jwtToken"),
                 "Content-Type": "multipart/form-data"

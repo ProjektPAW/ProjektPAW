@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Import icons from react-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {sendError, sendSuccess, sendWarning} from './toast'
+import axios from "axios";
 
 function Register() {
     const [type, setType] = useState('password');
@@ -40,29 +41,26 @@ function Register() {
             sendError("Passwords do not match.");
             return;
         }
+        
         try {
-            const response = await fetch("http://localhost:5000/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            });
-            
-            const data = await response.json();
-
-            if (response.status === 200) {
-                sendError(data.message || "Registration failed.");
-                return;
-            }
-            else if (response.ok) {
-                sendSuccess("User registered successfully!");
-                setTimeout(() => navigate("/"), 2000);
-                return;
-            } else {
-                sendError(data.message || "Registration failed.");
-            }
+            axios
+                .post("/api/register", formData) 
+                .then((response) => {
+                    if (response.status === 200) {
+                        sendError(response.data.message || "Registration failed.");
+                        return;
+                    }
+                    sendSuccess("User registered successfully!");
+                    setTimeout(() => navigate("/"), 2000);
+                })
+                .catch((error) => {
+                    console.error("Błąd:", error);
+                    sendError("Registration failed.");
+                });
         } catch (error) {
             sendError("Server error: " + error.message);
         }
+
     };
 
     return (

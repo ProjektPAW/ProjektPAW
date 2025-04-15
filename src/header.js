@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import profileImg from "./public/imgs/profile.png";
 import {Outlet, Link} from 'react-router-dom';
 import {sendError, sendSuccess} from './toast'
+import axios from "axios";
 
 function Header({ refr }) {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -14,38 +15,36 @@ function Header({ refr }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 };
 
-const handleLogin = async (e) => {
+const handleLogin = (e) => {
   e.preventDefault();
-  try {
-      const response = await fetch("http://localhost:5000/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+  try{
+    axios
+      .post("/api/login", formData)
+      .then((response) => {
+          const data = response.data;
+          if (response.status=== 200) {
+            if (data.token) {
+                localStorage.setItem("jwtToken", data.token);
+                localStorage.setItem("username", data.username);
+                localStorage.setItem("email", data.email);
+                setIsLogged(true);
+
+                setFormData({ username: "", password: "" });
+                sendSuccess("Logged in successfully!");
+                refr();
+            } else {
+                sendError(data.message || "Login failed.");
+            }
+          }else {
+              sendError(data.message || "Login failed.");
+          }
+      })
+      .catch((error) => {
+          console.error("Błąd:", error);
+          sendError("Login failed.");
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-          if(data.token){
-
-            localStorage.setItem('jwtToken', data.token);
-            localStorage.setItem('username', data.username);
-            localStorage.setItem('email', data.email);
-            setIsLogged(true);
-
-            setFormData({ username: "", password: "" });
-            sendSuccess("Logged in successfully!");
-            refr();
-          }
-          else{
-            sendError(data.message || "login failed.");
-          }
-      } else {
-          sendError(data.message || "login failed.");
-      }
   } catch (error) {
-      console.error("Błąd sieci:", error);
-      sendError("Cannot connect to server.");
+      sendError("Server error: " + error.message);
   }
 };
 
