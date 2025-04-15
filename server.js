@@ -18,6 +18,7 @@ app.use(fileUpload({
     useTempFiles : true,
     tempFileDir : '/tmp/'
 }));
+app.use('/files',express.static('./files/'));
 
 app.get("/", (req, res) => {
   res.send("API is running...");
