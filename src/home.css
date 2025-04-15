@@ -1,5 +1,17 @@
 .content {
     flex-grow: 1;
-    height: 76.4vh;
 }
-
+.photo-grid {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+}
+.photo-card {
+padding: 1rem;
+}
+.photo-card img {
+width: 300px;
+height: 200px;
+object-fit: cover;
+border-radius: 8px;
+}
