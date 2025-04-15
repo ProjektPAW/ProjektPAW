@@ -19,9 +19,13 @@ async function addPhoto(token,req,res) {
     }
     const { title,is_private,description } = req.body;
     let file=req.files.photo;
-    let path = "files\\"+Date.now()+"__"+file.name;
+    let path = "files";
+    if (!fs.existsSync(path)) {
+        fs.mkdirSync(path);
+    }
+    path+="\\"+Date.now()+"__"+file.name;
     file.mv(path);
-    let result = await photodao.addPhoto(title,path,is_private,Date.now(),description,id_user);
+    let result = await photodao.addPhoto(title,path,is_private,new Date(),description,id_user);
     return res.status(201).send("Photo added succesfully");
 }
 

@@ -92,6 +92,7 @@ async function checkTokenExpired(token,res) {
 
 async function getUser(token,res) {    
   let id_user = await autenthicate(token);
+  if(id_user<0) return res.status(200).send("Invalid token");
   const result = await userdao.selectUserById(id_user);
   return res.json({ username: result.rows[0].username, email: result.rows[0].email });
 }

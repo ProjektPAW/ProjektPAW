@@ -18,7 +18,7 @@ async function getAllPublicPhotos() {
 
 async function addPhoto(title,path,is_private,added,description,id_user) {
     let result = await pool.query(
-        "insert into photos(title,path,is_private,added,description,id_user) values($1,$2,$3,to_timestamp($4),$5,$6);",
+        "insert into photos(title,path,is_private,added,description,id_user) values($1,$2,$3,$4,$5,$6);",
         [title,path,is_private,added,description,id_user]
     );
 }
