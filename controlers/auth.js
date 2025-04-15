@@ -1,6 +1,6 @@
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-const db = require("../model/database");
+const userdao = require("../model/userDAO");
 const jwt = require("jsonwebtoken");
 
 
@@ -11,11 +11,11 @@ async function register(username,email,password,res){
             return res.status(200).json({ message: "All fields are required" });
         }
         
-        if((await db.selectUserByUnameEmail(username,email)).rowCount>0)
+        if((await userdao.selectUserByUnameEmail(username,email)).rowCount>0)
             return res.status(200).json({message:"Username or email taken"});
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await db.createUser(username,email,hashedPassword);
+        const result = await userdao.createUser(username,email,hashedPassword);
         res.status(201).json({ message: "User registered successfully", user: result.rows[0] });
     } catch (err) {
         res.status(500).json({ message: "Server error: " + err.message });
@@ -24,7 +24,7 @@ async function register(username,email,password,res){
 
 async function login(username,password,res) {
     try{
-        const result = await db.selectUserByUsername(username);
+        const result = await userdao.selectUserByUsername(username);
         if(result.rowCount==0){
             res.status(200).json({message:"Invalid username."});
             return;
@@ -56,22 +56,27 @@ async function login(username,password,res) {
 
 async function autenthicate(token) {
     try{
+        let token_arr = token.split(" ");
+        token=token_arr[token_arr.length - 1];
         const content = jwt.verify(token,process.env.JWT_SECRET);
-        const result = await db.selectUserById(content.id);
+        const result = await userdao.selectUserById(content.id);
         if(result.rows[0].id_user==content.id && (content.exp*1000)>=Date.now())
-            return true;
-        return false;
+            return content.id;
+        return -1;
     }
     catch(err){
         if(!err=="JsonWebTokenError: jwt must be provided")
             console.log("JWT AUTH ERROR: "+err);
+        return -2;
     }
 }
 
 async function checkTokenExpired(token,res) {
     try{
+        let token_arr = token.split(" ");
+        token=token_arr[token_arr.length - 1];
         const content = jwt.verify(token,process.env.JWT_SECRET);
-        const result = await db.selectUserById(content.id);
+        const result = await userdao.selectUserById(content.id);
         if(result.rows[0].id_user!=content.id)
             res.status(400).json({valid:false,message:"Invalid token"});
         else if((content.exp*1000)>=Date.now())
@@ -86,11 +91,8 @@ async function checkTokenExpired(token,res) {
 }
 
 async function getUser(token,res) {    
-  if(!await autenthicate(token))
-    return res.status(200).json({message:"Invalid token"});
-
-  const content = jwt.verify(token,process.env.JWT_SECRET);
-  const result = await db.selectUserById(content.id);
+  let id_user = await autenthicate(token);
+  const result = await userdao.selectUserById(id_user);
   return res.json({ username: result.rows[0].username, email: result.rows[0].email });
 }
 

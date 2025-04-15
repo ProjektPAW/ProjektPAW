@@ -1,24 +1,23 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { Pool } = require("pg");
 const auth = require("./controlers/auth");
+const photos = require("./controlers/photos");
+const fileUpload = require("express-fileupload");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Konfiguracja bazy danych
-const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-});
-
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload({
+    // Configure file uploads with maximum file size 10MB
+    limits: { fileSize: 10 * 1024 * 1024 },
 
+    // Temporarily store uploaded files to disk, rather than buffering in memory
+    useTempFiles : true,
+    tempFileDir : '/tmp/'
+}));
 
 app.get("/", (req, res) => {
   res.send("API is running...");
@@ -52,6 +51,16 @@ app.get("/getuser", async (req, res) => {
   const token=req.headers.authorization;
   auth.getUser(token,res);
 });
+
+app.get("/getphotos", async (req, res) => {
+  photos.getAllPublicPhotos(res);
+});
+
+app.post("/addphoto", async (req, res) => {
+  const token=req.headers.authorization;
+  photos.addPhoto(token,req,res);
+});
+
 // Uruchomienie serwera
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
