@@ -11,3 +11,83 @@
     align-items: center;
     justify-content: center;
 }
+
+.open-modal-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.open-modal-btn:hover {
+    background-color: #0056b3;
+}
+
+.modal_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal_content {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.close_modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.photo-form {
+    display: flex;
+    flex-direction: column;
+}
+.photo-form label {
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+.photo-form input[type="text"],
+.photo-form input[type="file"],
+.photo-form textarea
+ {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+.photo-form textarea {
+    width: calc(100% - 16px);
+    height: 150px;
+    resize: none;
+}
+
+.photo-form button {
+    margin-top: 20px;
+    padding: 10px;
+    background: #28a745;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.photo-form button:hover {
+    background: #218838;
+}

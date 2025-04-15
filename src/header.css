@@ -107,7 +107,7 @@ header #login_form form input:focus {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-right: 1rem;
+    margin-right: 2rem;
 }
 
 #user_info p {
