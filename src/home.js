@@ -6,7 +6,8 @@ function Home() {
   const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
-    axios.get("/api/getphotos")
+    axios
+      .get("/api/getphotos")
       .then(response => {
         setPhotos(response.data);
       })

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import {sendError, sendSuccess, sendWarning} from './toast'
 import axios from "axios";
 
-function Profile() {
+function Profile({ refr }) {
     const [userData, setUserData] = useState({
         username: "",
         email: "",
@@ -16,6 +16,8 @@ function Profile() {
         photo: null,
     });
     const [showModal, setShowModal] = useState(false);
+
+    const [photos, setPhotos] = useState([]);
 
     useEffect(() => {
         axios
@@ -33,12 +35,28 @@ function Profile() {
             });
     }, []);
 
+    useEffect(() => {
+        axios
+            .get("/api/getuserphotos", {
+                headers: {
+                Authorization: localStorage.getItem("jwtToken"),
+                },
+            })
+            .then(response => {
+                setPhotos(response.data);
+            })
+            .catch(error => {
+                console.error("Błąd podczas pobierania zdjęć:", error);
+            });
+      }, []);
+
     const handleChange = (e) => {
         if(e.target.name=="photo")
             setFormData({ ...formData, [e.target.name]: e.target.files[0] });
+        else if (e.target.name === "is_private")
+            setFormData({ ...formData, [e.target.name]: e.target.checked });
         else
             setFormData({ ...formData, [e.target.name]: e.target.value });
-
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -64,6 +82,7 @@ function Profile() {
                     console.log(response.data);
                     sendSuccess("Photo added successfully!");
                     setShowModal(false);
+                    refr();
                 }else 
                     sendError("Photo addings failed.");
             })
@@ -105,6 +124,18 @@ function Profile() {
                         </div>
                     </div>
                 )}
+                <h2>Moje Zdjęcia</h2>
+                <div className="photo-grid">
+                {Array.isArray(photos) && photos.map((photo) => (
+                    <div key={photo.id_photo} className="photo-card">
+                    <img src={`/api/${photo.path}`} alt={photo.title} />
+                    <h4>{photo.title}</h4>
+                    <p>{photo.description}</p>
+                    <p>{photo.is_private ? "(Prywatne)" : ""}</p>
+                    <p className="date">{photo.added}</p>
+                    </div>
+                ))}
+                </div>
             </main>
         </div>
     );

@@ -22,7 +22,7 @@ function App() {
       <Routes >
         <Route path="/" element={<Home key={key}/>}/>
         <Route path="/register" element={<Register key={key}/>}/>
-        <Route path="/profile"  element={isLoggedIn ? <Profile key={key} /> : <Navigate to="/" />} />
+        <Route path="/profile"  element={isLoggedIn ? <Profile key={key} refr={refr} /> : <Navigate to="/" />} />
       </Routes>
       <Footer/>
     </BrowserRouter>
