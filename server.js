@@ -57,6 +57,11 @@ app.get("/getphotos", async (req, res) => {
   photos.getAllPublicPhotos(res);
 });
 
+app.get("/getuserphotos", async (req, res) => {
+  const token=req.headers.authorization;
+  photos.getUserPhotos(token, res);
+});
+
 app.post("/addphoto", async (req, res) => {
   const token=req.headers.authorization;
   photos.addPhoto(token,req,res);

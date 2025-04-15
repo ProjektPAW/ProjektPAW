@@ -16,6 +16,16 @@ async function getAllPublicPhotos() {
     );
 }
 
+async function getUserPhotos(id_user) {
+    return await pool.query(
+        `SELECT p.id_photo, p.title, p.path, p.added, p.description, p.is_private, u.username
+         FROM photos p INNER JOIN users u ON p.id_user = u.id_user
+         WHERE p.id_user = $1
+         ORDER BY p.added DESC`,
+        [id_user]
+    );
+}
+
 async function addPhoto(title,path,is_private,added,description,id_user) {
     let result = await pool.query(
         "insert into photos(title,path,is_private,added,description,id_user) values($1,$2,$3,$4,$5,$6);",
@@ -25,6 +35,7 @@ async function addPhoto(title,path,is_private,added,description,id_user) {
 
 module.exports={
     getAllPublicPhotos,
+    getUserPhotos,
     addPhoto
 }
 

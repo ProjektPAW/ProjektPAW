@@ -9,10 +9,8 @@ async function getAllPublicPhotos(res) {
 
 async function addPhoto(token,req,res) {
     let id_user = await auth.autenthicate(token);
-    if(id_user < 0){
-        console.log("Invalid token "+id_user);
+    if(id_user < 0)
         return res.status(200).send("Invalid token");
-    }
     if (!req.files || !req.files.photo){
         console.log("No file data");
         return res.status(200).send("No file data");
@@ -28,9 +26,16 @@ async function addPhoto(token,req,res) {
     let result = await photodao.addPhoto(title,path,is_private,new Date(),description,id_user);
     return res.status(201).send("Photo added succesfully");
 }
-
+async function getUserPhotos(token, res){
+    let id_user = await auth.autenthicate(token);
+    if(id_user < 0)
+        return res.status(200).send("Invalid token");
+    let result = await photodao.getUserPhotos(id_user);
+    return res.status(201).json(result.rows);
+}
 
 module.exports={
     getAllPublicPhotos,
+    getUserPhotos,
     addPhoto
 }
