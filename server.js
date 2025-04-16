@@ -69,6 +69,11 @@ router.post("/addphoto", async (req, res) => {
   photos.addPhoto(token,req,res);
 });
 
+router.patch("/editphoto", async (req, res) => {
+  const token=req.headers.authorization;
+  photos.editPhoto(token,req,res);
+});
+
 // Uruchomienie serwera
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

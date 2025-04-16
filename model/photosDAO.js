@@ -33,10 +33,27 @@ async function addPhoto(title,path,is_private,added,description,id_user) {
     );
 }
 
+async function getPhotoById(id_photo, id_user) {
+    return await pool.query(
+        "SELECT * FROM photos WHERE id_photo = $1 and id_user = $2",
+        [id_photo,id_user]
+    );
+}
+
+async function editPhoto(title,is_private,description,id_photo,path) {
+    let result = await pool.query(
+        "update photos set title=$1, is_private=$2, description=$3, path=$4  \
+        where id_photo=$5",
+        [title,is_private,description,path,id_photo]
+    );
+}
+
 module.exports={
     getAllPublicPhotos,
     getUserPhotos,
-    addPhoto
+    addPhoto,
+    getPhotoById,
+    editPhoto,
 }
 
 
