@@ -89,9 +89,11 @@ function Header({ refr }) {
           <p>
             Hello, <strong>{localStorage.getItem("username")}</strong>!
           </p>
-          <button className={`${styles.header_btn} ${styles.profile_btn}`}>
-            <img src={profileImg} alt="Profile" />
-          </button>
+          <Link to="/profile">
+            <button className={`${styles.header_btn} ${styles.profile_btn}`}>
+              <img src={profileImg} alt="Profile" />
+            </button>
+          </Link>
           <button
             className={`${styles.header_btn} ${styles.logout_btn}`}
             onClick={handleLogout}

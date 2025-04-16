@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import {sendError, sendSuccess, sendWarning} from './toast'
 import axios from "axios";
 import privateImg from "./public/imgs/private.png";
+import closeImg from "./public/imgs/close.png";
+import editImg from "./public/imgs/edit.png";
 
 function Profile({ refr }) {
     const [userData, setUserData] = useState({
@@ -17,8 +19,16 @@ function Profile({ refr }) {
         is_private: false,
         photo: null,
     });
+
+    const [editFormData, setEditFormData] = useState({
+        title: "",
+        description: "",
+        is_private: false,
+        id_photo:null
+    });
     const [showModal, setShowModal] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [selectedEdit, setSelectedEdit] = useState(null);
     const [photos, setPhotos] = useState([]);
 
     useEffect(() => {
@@ -29,7 +39,6 @@ function Profile({ refr }) {
                 },
             })
             .then((response) => {
-                console.log(response.data);
                 setUserData(response.data);
             })
             .catch((error) => {
@@ -97,6 +106,42 @@ function Profile({ refr }) {
         }
     };
 
+    const handleEditChange = (e) => {
+        if (e.target.name === "is_private")
+            setEditFormData({ ...editFormData, [e.target.name]: e.target.checked, id_photo:selectedEdit.id_photo });
+        else
+            setEditFormData({ ...editFormData, [e.target.name]: e.target.value, id_photo:selectedEdit.id_photo});
+    };
+    const handleEditSubmit = async (e) => {
+        try {
+            axios
+            .patch("/api/editphoto",editFormData, {
+                headers: {
+                Authorization: localStorage.getItem("jwtToken"),
+                "Content-Type": "application/json"
+                },
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    sendError("Authentication failed");
+                    return;
+                }
+                else if(response.status === 201){
+                    console.log(response.data);
+                    sendSuccess("Photo edited successfully!");
+                    setShowModal(false);
+                    refr();
+                }else 
+                    sendError("Photo edit failed.");
+            })
+            .catch((error) => {
+                console.error("Błąd:", error);
+                sendError("Photo edit failed.");
+            });
+        } catch (error) {
+            sendError("Server error: " + error.message);
+        }
+    };
     return (
         <div className={styles.page_container}>
             <main className={styles.content}>
@@ -137,19 +182,36 @@ function Profile({ refr }) {
                         className={`${photoStyles.clickable} ${photoStyles.photo}`}
                     />
                     <div className={styles.title_container}>
-                        {photo.is_private?(
-                            <img src={privateImg} alt="Private" className={styles.icon} />):("")}
-                        <h4>{photo.title.length > 25 ? photo.title.slice(0, 25) + '...' : photo.title}</h4>
+                        <div>
+                            {photo.is_private?(
+                                <img src={privateImg} alt="Private" className={styles.icon} />):("")}
+                            <h4>{photo.title.length > 25 ? photo.title.slice(0, 25) + '...' : photo.title}</h4>
+                        </div>
+                        <button className={styles.edit_btn}>
+                            <img src={editImg} 
+                                alt="Edit" 
+                                className={styles.icon_edit} 
+                                onClick={() => {
+                                    setSelectedEdit(photo);
+                                    setEditFormData({
+                                        title: photo.title,
+                                        description: photo.description,
+                                        is_private: photo.is_private,
+                                        id_photo: photo.id_photo
+                                    });
+                                }}/>
+                        </button>
                     </div>
                     <p>{photo.description.length > 25 ? photo.description.slice(0, 25) + '...' : photo.description}</p>
-                    <p>{photo.is_private ? "(Prywatne)" : ""}</p>
                     </div>
                 ))}
                 </div>
                 {selectedPhoto && (
                 <div className={photoStyles.modal_overlay} onClick={() => setSelectedPhoto(null)}>
                     <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
-                    <span className={photoStyles.close_modal} onClick={() => setSelectedPhoto(null)}>x</span>
+                    <span className={photoStyles.close_modal} onClick={() => setSelectedPhoto(null)}>
+                        <img src={closeImg} alt="Close" className={photoStyles.icon_close}/>
+                    </span>
                     <img src={`/api/${selectedPhoto.path}`} alt={selectedPhoto.title} />
                     <h4>Tytuł: {selectedPhoto.title}</h4>
                     <p>{selectedPhoto.description.length==0?"Brak opisu":"Opis: "+selectedPhoto.description}</p>
@@ -162,6 +224,24 @@ function Profile({ refr }) {
                         minute:"numeric"
                         })}
                     </p>
+                    </div>
+                </div>
+                )}
+                {selectedEdit && (
+                <div className={photoStyles.modal_overlay} onClick={() => setSelectedEdit(null)}>
+                    <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+                        <span className={photoStyles.close_modal} onClick={() => setSelectedEdit(null)}>
+                            <img src={closeImg} alt="Close" className={photoStyles.icon_close}/>
+                        </span>
+                        <img src={`/api/${selectedEdit.path}`} alt={selectedEdit.title} />
+                        <form onSubmit={handleEditSubmit} className={styles.photo_form}>
+                            <label>Tytuł:</label>
+                            <input type="text" name="title" onChange={handleEditChange} required defaultValue={selectedEdit.title}/>
+                            <label>Opis:</label>
+                            <textarea name="description" onChange={handleEditChange} defaultValue={selectedEdit.description}/>
+                            <label><input type="checkbox" name="is_private" onChange={handleEditChange} defaultChecked={selectedEdit.is_private}/> Prywatne</label>
+                            <button type="submit">Zapisz zmiany</button>
+                        </form>
                     </div>
                 </div>
                 )}

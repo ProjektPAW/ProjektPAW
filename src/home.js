@@ -7,6 +7,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, EffectCoverflow } from 'swiper/modules';
+import closeImg from "./public/imgs/close.png";
 
 function Home() {
   const [photos, setPhotos] = useState([]);
@@ -79,9 +80,12 @@ function Home() {
           {selectedPhoto && (
           <div className={photoStyles.modal_overlay} onClick={() => setSelectedPhoto(null)}>
               <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
-              <span className={photoStyles.close_modal} onClick={() => setSelectedPhoto(null)}>x</span>
+              <div className={photoStyles.close_modal} onClick={() => setSelectedPhoto(null)}>
+                  <img src={closeImg} alt="Close" className={photoStyles.icon_close}/>
+              </div>
               <img src={`/api/${selectedPhoto.path}`} alt={selectedPhoto.title} />
               <h4>Tytuł: {selectedPhoto.title}</h4>
+              <p>Autor: {selectedPhoto.username}</p>
               <p>{selectedPhoto.description.length==0?"Brak opisu":"Opis: "+selectedPhoto.description}</p>
               <p>Data dodania: 
                 {new Date(selectedPhoto.added).toLocaleDateString("pl-PL", {
