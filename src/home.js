@@ -10,7 +10,7 @@ import { Navigation, EffectCoverflow } from 'swiper/modules';
 
 function Home() {
   const [photos, setPhotos] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
   useEffect(() => {
     axios
       .get("/api/getphotos")
@@ -64,12 +64,37 @@ function Home() {
         <div className={photoStyles.photo_grid}>
           {photos.slice(0, photos.length).map((photo) => (
             <div key={photo.id_photo} className={photoStyles.photo_card} >
-              <img src={`/api/${photo.path}`} alt={photo.title} />
-              <h4>{photo.title}</h4>
-              <p>{photo.description}</p>
+              <img
+                  src={`/api/${photo.path}`}
+                  alt={photo.title}
+                  onClick={() => setSelectedPhoto(photo)}
+                  className={`${photoStyles.clickable} ${photoStyles.photo}`}
+
+              />
+            <h4>{photo.title.length > 30 ? photo.title.slice(0, 30) + '...' : photo.title}</h4>
+            <p>{photo.description.length > 30 ? photo.description.slice(0, 30) + '...' : photo.description}</p>
             </div>
           ))}
         </div>
+          {selectedPhoto && (
+          <div className={photoStyles.modal_overlay} onClick={() => setSelectedPhoto(null)}>
+              <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+              <span className={photoStyles.close_modal} onClick={() => setSelectedPhoto(null)}>x</span>
+              <img src={`/api/${selectedPhoto.path}`} alt={selectedPhoto.title} />
+              <h4>Tytuł: {selectedPhoto.title}</h4>
+              <p>{selectedPhoto.description.length==0?"Brak opisu":"Opis: "+selectedPhoto.description}</p>
+              <p>Data dodania: 
+                {new Date(selectedPhoto.added).toLocaleDateString("pl-PL", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                  hour:"numeric",
+                  minute:"numeric"
+                })}
+              </p>
+              </div>
+          </div>
+          )}
       </main>
     </div>
   );

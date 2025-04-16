@@ -3,6 +3,7 @@ import photoStyles from './photoGalery.module.css';
 import React, { useEffect, useState } from "react";
 import {sendError, sendSuccess, sendWarning} from './toast'
 import axios from "axios";
+import privateImg from "./public/imgs/private.png";
 
 function Profile({ refr }) {
     const [userData, setUserData] = useState({
@@ -17,7 +18,7 @@ function Profile({ refr }) {
         photo: null,
     });
     const [showModal, setShowModal] = useState(false);
-
+    const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [photos, setPhotos] = useState([]);
 
     useEffect(() => {
@@ -129,13 +130,41 @@ function Profile({ refr }) {
                 <div className={photoStyles.photo_grid}>
                 {Array.isArray(photos) && photos.map((photo) => (
                     <div key={photo.id_photo} className={photoStyles.photo_card}>
-                    <img src={`/api/${photo.path}`} alt={photo.title} />
-                    <h4>{photo.title}</h4>
-                    <p>{photo.description}</p>
+                    <img
+                        src={`/api/${photo.path}`}
+                        alt={photo.title}
+                        onClick={() => setSelectedPhoto(photo)}
+                        className={`${photoStyles.clickable} ${photoStyles.photo}`}
+                    />
+                    <div className={styles.title_container}>
+                        {photo.is_private?(
+                            <img src={privateImg} alt="Private" className={styles.icon} />):("")}
+                        <h4>{photo.title.length > 25 ? photo.title.slice(0, 25) + '...' : photo.title}</h4>
+                    </div>
+                    <p>{photo.description.length > 25 ? photo.description.slice(0, 25) + '...' : photo.description}</p>
                     <p>{photo.is_private ? "(Prywatne)" : ""}</p>
                     </div>
                 ))}
                 </div>
+                {selectedPhoto && (
+                <div className={photoStyles.modal_overlay} onClick={() => setSelectedPhoto(null)}>
+                    <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+                    <span className={photoStyles.close_modal} onClick={() => setSelectedPhoto(null)}>x</span>
+                    <img src={`/api/${selectedPhoto.path}`} alt={selectedPhoto.title} />
+                    <h4>Tytuł: {selectedPhoto.title}</h4>
+                    <p>{selectedPhoto.description.length==0?"Brak opisu":"Opis: "+selectedPhoto.description}</p>
+                    <p>Data dodania: 
+                        {new Date(selectedPhoto.added).toLocaleDateString("pl-PL", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour:"numeric",
+                        minute:"numeric"
+                        })}
+                    </p>
+                    </div>
+                </div>
+                )}
             </main>
         </div>
     );

@@ -11,7 +11,10 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 3rem 0;
+  margin-bottom: 2rem;
 }
 .page_container{
   min-height: 76.4vh;
 }
+
+

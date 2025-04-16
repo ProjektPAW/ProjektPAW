@@ -1,3 +1,18 @@
+.icon{
+    width:20px;
+    height: 20px;
+    padding-right: 10px;
+}
+
+.title_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.title_container h4{
+    display: inline;
+    max-width: 90%;
+}
 .page_container {
     display: flex;
     flex-direction: column;
@@ -13,7 +28,6 @@
     justify-content: center;
     padding-bottom: 20px;
 }
-
 
 .open_modal_btn {
     margin-top: 20px;
