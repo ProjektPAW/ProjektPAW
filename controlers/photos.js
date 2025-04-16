@@ -17,11 +17,11 @@ async function addPhoto(token,req,res) {
     }
     const { title,is_private,description } = req.body;
     let file=req.files.photo;
-    let path = "files";
+    let path = "files/";
     if (!fs.existsSync(path)) {
         fs.mkdirSync(path);
     }
-    path+="\\"+Date.now()+"__"+file.name;
+    path+=Date.now()+"__"+file.name;
     file.mv(path);
     let result = await photodao.addPhoto(title,path,is_private,new Date(),description,id_user);
     return res.status(201).send("Photo added succesfully");
@@ -34,8 +34,15 @@ async function getUserPhotos(token, res){
     return res.status(201).json(result.rows);
 }
 
+async function getPhotoInfo(req,res) {
+    let id_photo = req.body.id_photo;
+    let result = await photodao.getPhotoInfo(id_photo);
+    return res.status(200).json(result.rows);
+}
+
 module.exports={
     getAllPublicPhotos,
     getUserPhotos,
-    addPhoto
+    addPhoto,
+    getPhotoInfo
 }

@@ -4,6 +4,7 @@ const cors = require("cors");
 const auth = require("./controlers/auth");
 const photos = require("./controlers/photos");
 const fileUpload = require("express-fileupload");
+const router = express.Router()
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,13 +19,14 @@ app.use(fileUpload({
     useTempFiles : true,
     tempFileDir : '/tmp/'
 }));
-app.use('/files',express.static('./files/'));
+app.use('/api/files',express.static('./files/'));
+app.use('/api', router);
 
-app.get("/", (req, res) => {
+router.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-app.get("/users", async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM users");
     res.json(result.rows);
@@ -33,38 +35,42 @@ app.get("/users", async (req, res) => {
   }
 });
 
-app.post("/register", async (req, res) => {
+router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   auth.register(username, email, password,res);
 });
 
-app.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   auth.login(username, password,res);
 });
 
-app.post("/checktoken", async (req, res) => {
+router.post("/checktoken", async (req, res) => {
   const token = req.headers.authorization;
   auth.checkTokenExpired(token,res);
 });
 
-app.get("/getuser", async (req, res) => {
+router.get("/getuser", async (req, res) => {
   const token=req.headers.authorization;
   auth.getUser(token,res);
 });
 
-app.get("/getphotos", async (req, res) => {
+router.get("/getphotos", async (req, res) => {
   photos.getAllPublicPhotos(res);
 });
 
-app.get("/getuserphotos", async (req, res) => {
+router.get("/getuserphotos", async (req, res) => {
   const token=req.headers.authorization;
   photos.getUserPhotos(token, res);
 });
 
-app.post("/addphoto", async (req, res) => {
+router.post("/addphoto", async (req, res) => {
   const token=req.headers.authorization;
   photos.addPhoto(token,req,res);
+});
+
+router.get("/getphotoinfo", async (req, res) => {
+  photos.getPhotoInfo(req,res);
 });
 
 // Uruchomienie serwera

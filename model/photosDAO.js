@@ -10,9 +10,18 @@ const pool = new Pool({
 
 async function getAllPublicPhotos() {
     return await pool.query(
-        "select p.id_photo, p.title, p.path, p.added, p.description, u.username \
+        "select p.id_photo, p.title, p.path, p.description, u.username \
         from photos p inner join users u on p.id_user=u.id_user \
         where p.is_private=false order by p.added desc"
+    );
+}
+
+async function getPhotoInfo(id_photo) {
+    return await pool.query(
+        "select p.id_photo, p.title, p.path, p.added, p.description, u.username \
+        from photos p inner join users u on p.id_user=u.id_user \
+        where p.is_private=false and p.id_photo=$1 "
+        ,[id_photo]
     );
 }
 
@@ -35,6 +44,7 @@ async function addPhoto(title,path,is_private,added,description,id_user) {
 
 module.exports={
     getAllPublicPhotos,
+    getPhotoInfo,
     getUserPhotos,
     addPhoto
 }
