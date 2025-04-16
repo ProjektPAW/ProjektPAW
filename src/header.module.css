@@ -14,14 +14,16 @@
   
   .header a {
     text-decoration: none;
+    margin: 0px;
+    padding: 0px;
+    margin-left: 1rem;
   }
   
   .title {
-    margin: 0;
-    margin-left: 1rem;
     font-size: 1.8rem;
     color: #333;
-    min-width: 150px;
+    padding:10px;
+    margin:0px;
   }
   
   .header_btn img {
@@ -40,6 +42,38 @@
     margin-right: 1rem;
     gap: 10px;
     flex-wrap: wrap;
+    flex-direction: row;
+  }
+  @media(max-width:800px){
+    .header{
+      flex-direction: column;
+      justify-content: center;
+    }
+    .header a{
+      margin-left: 0rem;
+    }
+    .title{
+      margin: 1rem 0rem;
+    }
+    .loginForm{
+      margin-bottom: 1rem;
+    }
+    .user_info {
+      margin-right: 2rem;
+      margin-bottom: 1rem;
+    }
+  }
+  @media(max-width:700px){
+    .loginForm {
+      flex-direction: column;
+    }
+    .loginForm form{
+      flex-direction: column;
+      justify-content: center;
+    }
+    .register_btn{
+      width: 100%;
+    }
   }
   
   .loginForm form input {

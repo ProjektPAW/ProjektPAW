@@ -20,19 +20,25 @@
     
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1441px) {
     .photo_grid {
         grid-template-columns: repeat(4, 1fr); /* Exactly 4 columns */
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1440px) {
+    .photo_grid {
+        grid-template-columns: repeat(3, 1fr); /* Exactly 4 columns */
+    }
+}
+
+@media (max-width: 1070px) {
     .photo_grid {
         grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     .photo_grid {
         grid-template-columns: 1fr; /* 1 column on small screens */
     }
