@@ -1,4 +1,5 @@
-import "./profile.css";
+import styles from "./profile.module.css";
+import photoStyles from './photoGalery.module.css';
 import React, { useEffect, useState } from "react";
 import {sendError, sendSuccess, sendWarning} from './toast'
 import axios from "axios";
@@ -96,22 +97,22 @@ function Profile({ refr }) {
     };
 
     return (
-        <div className="page_container">
-            <main className="content">
-                <div className="profile_card">
+        <div className={styles.page_container}>
+            <main className={styles.content}>
+                <div className={styles.profile_card}>
                     <h2>Profil</h2>
                     <p>Użytkownik: {userData.username}</p>
                     <p>Email: {userData.email}</p>
-                    <button className="open-modal-btn" onClick={() => setShowModal(true)}>
+                    <button className={styles.open_modal_btn} onClick={() => setShowModal(true)}>
                         Dodaj zdjęcie
                     </button>
                 </div>
                 {showModal && (
-                    <div className="modal_overlay">
-                        <div className="modal_content">
-                            <span className="close_modal" onClick={() => setShowModal(false)}>x</span>
+                    <div className={styles.modal_overlay}>
+                        <div className={styles.modal_content}>
+                            <span className={styles.close_modal} onClick={() => setShowModal(false)}>x</span>
                             <h3>Dodaj zdjęcie</h3>
-                            <form onSubmit={handleSubmit} className="photo-form">
+                            <form onSubmit={handleSubmit} className={styles.photo_form}>
                                 <label>Tytuł:</label>
                                 <input type="text" name="title" onChange={handleChange} required />
                                 <label>Opis:</label>
@@ -125,14 +126,13 @@ function Profile({ refr }) {
                     </div>
                 )}
                 <h2>Moje Zdjęcia</h2>
-                <div className="photo-grid">
+                <div className={photoStyles.photo_grid}>
                 {Array.isArray(photos) && photos.map((photo) => (
-                    <div key={photo.id_photo} className="photo-card">
+                    <div key={photo.id_photo} className={photoStyles.photo_card}>
                     <img src={`/api/${photo.path}`} alt={photo.title} />
                     <h4>{photo.title}</h4>
                     <p>{photo.description}</p>
                     <p>{photo.is_private ? "(Prywatne)" : ""}</p>
-                    <p className="date">{photo.added}</p>
                     </div>
                 ))}
                 </div>

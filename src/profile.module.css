@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+    min-height: 76.4vh;
 }
 
 .content {
@@ -10,9 +11,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding-bottom: 20px;
 }
 
-.open-modal-btn {
+
+.open_modal_btn {
     margin-top: 20px;
     padding: 10px 20px;
     background-color: #007bff;
@@ -21,7 +24,8 @@
     border-radius: 6px;
     cursor: pointer;
 }
-.open-modal-btn:hover {
+
+.open_modal_btn:hover {
     background-color: #0056b3;
 }
 
@@ -43,7 +47,7 @@
     padding: 2rem;
     border-radius: 10px;
     width: 400px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     position: relative;
 }
 
@@ -56,30 +60,32 @@
     cursor: pointer;
 }
 
-.photo-form {
+.photo_form {
     display: flex;
     flex-direction: column;
 }
-.photo-form label {
+
+.photo_form label {
     margin: 10px 0 5px;
     font-weight: bold;
 }
-.photo-form input[type="text"],
-.photo-form input[type="file"],
-.photo-form textarea
- {
+
+.photo_form input[type="text"],
+.photo_form input[type="file"],
+.photo_form textarea {
     padding: 8px;
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 6px;
 }
-.photo-form textarea {
+
+.photo_form textarea {
     width: calc(100% - 16px);
     height: 150px;
     resize: none;
 }
 
-.photo-form button {
+.photo_form button {
     margin-top: 20px;
     padding: 10px;
     background: #28a745;
@@ -88,6 +94,15 @@
     border-radius: 6px;
     cursor: pointer;
 }
-.photo-form button:hover {
+
+.photo_form button:hover {
     background: #218838;
+}
+.profile_card{
+    margin: 50px auto;
+    background-color: white;
+    background: #fff;
+    padding: 2rem 4rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }

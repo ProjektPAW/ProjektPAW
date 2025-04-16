@@ -1,4 +1,4 @@
-import "./register.css";
+import styles from "./register.module.css";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Import icons from react-icons
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -64,9 +64,9 @@ function Register() {
     };
 
     return (
-        <div className="page_container">
-            <main className="content">
-                <div className="register_form">
+        <div className={styles.page_container}>
+            <main className={styles.content}>
+                <div className={styles.register_form}>
                     <h2>Register</h2>
                     <form onSubmit={handleSubmit}>
                         <label>Login:</label>
@@ -76,32 +76,32 @@ function Register() {
                         <input type="email" name="email" onChange={handleChange} placeholder="Enter your email" />
 
                         <label>Password:</label>
-                        <div className="password_container">
+                        <div className={styles.password_container}>
                             <input
                                 type={type}
                                 name="password"
                                 placeholder="Enter password"
                                 onChange={handleChange}
                             />
-                            <span className="password-icon" onClick={handleToggle}>
+                            <span className={styles.password_icon} onClick={handleToggle}>
                                 {icon}
                             </span>
                         </div>
 
                         <label>Confirm Password:</label>
-                        <div className="password_container">
+                        <div className={styles.password_container}>
                             <input
                                 type={type}
                                 name="confirmPassword"
                                 placeholder="Confirm password"
                                 onChange={handleChange}
                             />
-                            <span className="password-icon" onClick={handleToggle}>
+                            <span className={styles.password_icon} onClick={handleToggle}>
                                 {icon}
                             </span>
                         </div>
                         
-                        <div id="new_register_btn">
+                        <div className={styles.register_btn}>
                             <button type="submit">Register</button>
                         </div>
                     </form>

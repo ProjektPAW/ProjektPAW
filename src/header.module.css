@@ -1,4 +1,4 @@
-header {
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -8,71 +8,75 @@ header {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
     flex-wrap: wrap;
-    margin:0;
-    padding:0;
-}
-header a{
+    margin: 0;
+    padding: 0;
+  }
+  
+  .header a {
     text-decoration: none;
-}
-h1 {
+  }
+  
+  .title {
     margin: 0;
     margin-left: 1rem;
     font-size: 1.8rem;
     color: #333;
     min-width: 150px;
-}
-.header_btn img {
+  }
+  
+  .header_btn img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-}
-#login_form {
+  }
+  
+  .loginForm {
     display: flex;
     align-items: center;
-}
-
-header #login_form form {
+  }
+  
+  .loginForm form {
     display: flex;
     margin-right: 1rem;
     gap: 10px;
     flex-wrap: wrap;
-}
-
-header #login_form form input {
+  }
+  
+  .loginForm form input {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1rem;
     transition: all 0.3s ease-in-out;
-}
-
-header #login_form form input:focus {
+  }
+  
+  .loginForm form input:focus {
     outline: none;
     border-color: #007BFF;
     box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
-}
-
-.header_btn {
+  }
+  
+  .header_btn {
     padding: 10px 15px;
     border: 1px solid #333;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
     transition: background 0.3s ease-in-out;
-}
-
-#login_btn {
+  }
+  
+  .login_btn {
     background-color: #ddd;
-}
-
-#register_btn {
+  }
+  
+  .register_btn {
     background-color: rgb(189, 247, 248);
-}
-
-#profile_btn{
+  }
+  
+  .profile_btn {
     background-color: #ddd;
-    width: 40px;  /* Button size */
-    height: 40px; 
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,38 +84,39 @@ header #login_form form input:focus {
     border-radius: 5px;
     cursor: pointer;
     padding: 5px;
-}
-
-#login_btn:hover {
+  }
+  
+  .login_btn:hover {
     background-color: #bbb;
-}
-
-#register_btn:hover {
+  }
+  
+  .register_btn:hover {
     background-color: rgb(132, 225, 226);
-}
-
-#profile_btn:hover {
+  }
+  
+  .profile_btn:hover {
     background-color: #bbb;
-}
-
-#logout_btn {
+  }
+  
+  .logout_btn {
     background-color: #ff4d4d;
     color: white;
-}
-
-#logout_btn:hover {
+  }
+  
+  .logout_btn:hover {
     background-color: #cc0000;
-}
-
-#user_info {
+  }
+  
+  .user_info {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-right: 2rem;
-}
-
-#user_info p {
+  }
+  
+  .user_info p {
     margin: 0;
     font-size: 1rem;
     color: #333;
-}
+  }
+  
