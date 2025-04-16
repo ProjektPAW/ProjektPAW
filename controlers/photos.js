@@ -34,15 +34,8 @@ async function getUserPhotos(token, res){
     return res.status(201).json(result.rows);
 }
 
-async function getPhotoInfo(req,res) {
-    let id_photo = req.body.id_photo;
-    let result = await photodao.getPhotoInfo(id_photo);
-    return res.status(200).json(result.rows);
-}
-
 module.exports={
     getAllPublicPhotos,
     getUserPhotos,
     addPhoto,
-    getPhotoInfo
 }

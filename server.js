@@ -69,10 +69,6 @@ router.post("/addphoto", async (req, res) => {
   photos.addPhoto(token,req,res);
 });
 
-router.get("/getphotoinfo", async (req, res) => {
-  photos.getPhotoInfo(req,res);
-});
-
 // Uruchomienie serwera
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
