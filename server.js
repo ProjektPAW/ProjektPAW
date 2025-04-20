@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const auth = require("./controlers/auth");
 const photos = require("./controlers/photos");
+const catalogs = require("./controlers/catalogs");
+const catalogphoto = require("./controlers/catalogPhoto");
 const fileUpload = require("express-fileupload");
 const router = express.Router()
 
@@ -78,6 +80,39 @@ router.delete("/deletephoto", async (req, res) => {
   const token=req.headers.authorization;
   photos.deletePhoto(token,req,res);
 });
+
+// CATALOGS
+router.get("/getusercatalogs", async (req, res) => {
+  const token=req.headers.authorization;
+  catalogs.getUserCatalogs(token,res);
+});
+
+router.post("/addcatalog", async (req, res) => {
+  const token=req.headers.authorization;
+  catalogs.addCatalog(token,req,res);
+});
+
+router.patch("/editcatalog", async (req, res) => {
+  const token=req.headers.authorization;
+  catalogs.editCatalog(token,req,res);
+});
+
+router.delete("/deletecatalog", async (req, res) => {
+  const token=req.headers.authorization;
+  catalogs.deleteCatalog(token,req,res);
+});
+
+// PHOTOS IN CATALOGS
+router.get("/getphotosincatalog", async (req, res) => {
+  const token=req.headers.authorization;
+  catalogphoto.getPhotosInCatalog(token,req,res);
+});
+
+router.post("/addphototocatalog", async (req, res) => {
+  const token=req.headers.authorization;
+  catalogphoto.addPhotoToCatalog(token,req,res);
+});
+
 
 // Uruchomienie serwera
 app.listen(PORT, () => {
