@@ -74,6 +74,11 @@ router.patch("/editphoto", async (req, res) => {
   photos.editPhoto(token,req,res);
 });
 
+router.delete("/deletephoto", async (req, res) => {
+  const token=req.headers.authorization;
+  photos.deletePhoto(token,req,res);
+});
+
 // Uruchomienie serwera
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

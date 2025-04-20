@@ -41,21 +41,43 @@ async function editPhoto(token, req, res){
     let result = await photodao.getPhotoById(id_photo,id_user);
     if(result.rowCount<=0)
         return res.status(200).send("Photo not found");
-    console.log(req.body);
     let newPath = result.rows[0].path.split("__");
     newPath.shift();
     newPath="files/"+Date.now()+"__"+newPath.join("");
-    console.log("PATH: "+newPath);
-    fs.rename(result.rows[0].path, newPath, function (err) {
-        if (err) return res.status(500).send("File rename error: "+error);
-      })
-    let resultAdd = await photodao.editPhoto(title,is_private,description,id_photo,newPath);
-    return res.status(201).send("Update successful");
+    if(fs.rename(result.rows[0].path, newPath, function (err) {
+        if (err) {console.log("Photo deletion error: "+err);return 1;}
+        else return 0;
+    }))
+        return res.status(500).send("File rename error: "+error);
+    else{
+        let resultEdit = await photodao.editPhoto(title,is_private,description,id_photo,newPath);
+        return res.status(201).send("Update successful");
+    }
+}
+
+async function deletePhoto(token, req, res){
+    let id_user = await auth.autenthicate(token);
+    if(id_user < 0)
+        return res.status(200).send("Invalid token");
+    const {id_photo} = req.body;
+    let result = await photodao.getPhotoById(id_photo,id_user);
+    if(result.rowCount<=0)
+        return res.status(200).send("Photo not found");
+    if(fs.unlink(result.rows[0].path, function (err) {
+        if (err) {console.log("Photo deletion error: "+err);return 1;}
+        else return 0;
+    }))
+        return res.status(500).send("File deletion failed.");
+    else{
+        let resultDel = await photodao.deletePhoto(id_photo,id_user);
+        return res.status(201).send("Deletion successful");
+    }
 }
 
 module.exports={
     getAllPublicPhotos,
     getUserPhotos,
     addPhoto,
-    editPhoto
+    editPhoto,
+    deletePhoto,
 }

@@ -48,12 +48,20 @@ async function editPhoto(title,is_private,description,id_photo,path) {
     );
 }
 
+async function deletePhoto(id_photo,id_user) {
+    let result = await pool.query(
+        "delete from photos where id_photo=$1 and id_user=$2",
+        [id_photo,id_user]
+    );
+}
+
 module.exports={
     getAllPublicPhotos,
     getUserPhotos,
     addPhoto,
     getPhotoById,
     editPhoto,
+    deletePhoto,
 }
 
 
