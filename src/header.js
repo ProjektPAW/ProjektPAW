@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import profileImg from "./public/imgs/profile.png";
 import { sendError, sendSuccess } from "./toast";

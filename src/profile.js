@@ -6,6 +6,8 @@ import axios from "axios";
 import privateImg from "./public/imgs/private.png";
 import closeImg from "./public/imgs/close.png";
 import editImg from "./public/imgs/edit.png";
+import deleteImg from "./public/imgs/bin.png";
+import tickImg from "./public/imgs/check.png";
 
 function Profile({ refr }) {
     const [userData, setUserData] = useState({
@@ -29,8 +31,20 @@ function Profile({ refr }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [selectedEdit, setSelectedEdit] = useState(null);
+    const [showCatalogModal, setShowCatalogModal] = useState(false);
     const [photos, setPhotos] = useState([]);
+    const [catalogs, setCatalogs] = useState([]);
 
+    useEffect(() => {
+        const fetchedCatalogs = [
+          { id: 1, name: "Vacation 2021" },
+          { id: 2, name: "Birthday Party" },
+          { id: 3, name: "Family Reunion" },
+          { id: 4, name: "Nature Shots" },
+        ];
+        setCatalogs(fetchedCatalogs);
+      }, []);
+      
     useEffect(() => {
         axios
             .get("/api/getuser", {
@@ -62,7 +76,7 @@ function Profile({ refr }) {
       }, []);
 
     const handleChange = (e) => {
-        if(e.target.name=="photo")
+        if(e.target.name==="photo")
             setFormData({ ...formData, [e.target.name]: e.target.files[0] });
         else if (e.target.name === "is_private")
             setFormData({ ...formData, [e.target.name]: e.target.checked });
@@ -72,7 +86,7 @@ function Profile({ refr }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!formData.photo || !(formData.photo.type.split('/')[0]=="image")) {
+        if (!formData.photo || !(formData.photo.type.split('/')[0]==="image")) {
             sendWarning("Niedozwolony typ pliku!");
             return;
         }
@@ -142,6 +156,56 @@ function Profile({ refr }) {
             sendError("Server error: " + error.message);
         }
     };
+
+    const [newCatalog, setNewCatalog] = useState({
+        name: '',
+        description: '',
+        selectedPhotos: [] // This will store the ids of selected photos for the catalog
+      });
+      
+      // Handle changes to the catalog form (name and description)
+      const handleCatalogChange = (e) => {
+        const { name, value } = e.target;
+        setNewCatalog((prevState) => ({
+          ...prevState,
+          [name]: value
+        }));
+      };
+      
+      const togglePhotoSelect = (photoId) => {
+        setNewCatalog((prevCatalog) => {
+          const isSelected = prevCatalog.selectedPhotos.includes(photoId);
+          const updatedSelectedPhotos = isSelected
+            ? prevCatalog.selectedPhotos.filter((id) => id !== photoId) // Remove if already selected
+            : [...prevCatalog.selectedPhotos, photoId]; // Add if not selected
+      
+          return {
+            ...prevCatalog,
+            selectedPhotos: updatedSelectedPhotos,
+          };
+        });
+      };
+      
+      // Handle form submission for creating the catalog
+      const handleCatalogSubmit = async (e) => {
+        e.preventDefault();
+        // You would want to send the catalog data to your backend here:
+        // Example API call (pseudo-code):
+        const newCatalogData = {
+          name: newCatalog.name,
+          description: newCatalog.description,
+          photos: newCatalog.selectedPhotos
+        };
+        
+        /*try {
+         const response = await api.createCatalog(newCatalogData);
+          console.log('Catalog created:', response);
+          setShowCatalogModal(false); // Close modal after successful catalog creation
+        } catch (error) {
+          console.error('Error creating catalog:', error);
+        }
+          */
+    };
     return (
         <div className={styles.page_container}>
             <main className={styles.content}>
@@ -171,7 +235,26 @@ function Profile({ refr }) {
                         </div>
                     </div>
                 )}
-                <h2>Moje Zdjęcia</h2>
+
+                <div className={styles.catalog_section_container}>
+                    <div className={styles.catalog_container}>
+                        <h2>Moje Zdjęcia</h2>
+                        <div className={styles.catalog_group}>
+                            <select className={styles.catalog_dropdown}>
+                            {catalogs.map((catalog) => (
+                                <option key={catalog.id} value={catalog.id}>
+                                {catalog.name}
+                                </option>
+                            ))}
+                            </select>
+                            <button className={styles.add_catalog_btn} onClick={() => setShowCatalogModal(true)}>
+                                Dodaj katalog
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+                
                 <div className={photoStyles.photo_grid}>
                 {Array.isArray(photos) && photos.map((photo) => (
                     <div key={photo.id_photo} className={photoStyles.photo_card}>
@@ -182,25 +265,33 @@ function Profile({ refr }) {
                         className={`${photoStyles.clickable} ${photoStyles.photo}`}
                     />
                     <div className={styles.title_container}>
-                        <div>
+                        <div className={styles.padlock_container}>
                             {photo.is_private?(
                                 <img src={privateImg} alt="Private" className={styles.icon} />):("")}
                             <h4>{photo.title.length > 25 ? photo.title.slice(0, 25) + '...' : photo.title}</h4>
                         </div>
-                        <button className={styles.edit_btn}>
-                            <img src={editImg} 
-                                alt="Edit" 
-                                className={styles.icon_edit} 
-                                onClick={() => {
-                                    setSelectedEdit(photo);
-                                    setEditFormData({
-                                        title: photo.title,
-                                        description: photo.description,
-                                        is_private: photo.is_private,
-                                        id_photo: photo.id_photo
-                                    });
-                                }}/>
-                        </button>
+                        <div>
+                            <button className={styles.edit_btn}>
+                                <img src={editImg} 
+                                    alt="Edit" 
+                                    className={styles.icon_edit} 
+                                    onClick={() => {
+                                        setSelectedEdit(photo);
+                                        setEditFormData({
+                                            title: photo.title,
+                                            description: photo.description,
+                                            is_private: photo.is_private,
+                                            id_photo: photo.id_photo
+                                        });
+                                    }}/>
+                            </button>
+                            <button className ={styles.delete_btn}>
+                                <img src={deleteImg}
+                                    alt = "Delete"
+                                    className={styles.icon_delete}
+                                />
+                            </button>
+                        </div>
                     </div>
                     <p>{photo.description.length > 25 ? photo.description.slice(0, 25) + '...' : photo.description}</p>
                     </div>
@@ -214,9 +305,9 @@ function Profile({ refr }) {
                     </span>
                     <img src={`/api/${selectedPhoto.path}`} alt={selectedPhoto.title} />
                     <h4>Tytuł: {selectedPhoto.title}</h4>
-                    <p>{selectedPhoto.description.length==0?"Brak opisu":"Opis: "+selectedPhoto.description}</p>
-                    <p>Data dodania: 
-                        {new Date(selectedPhoto.added).toLocaleDateString("pl-PL", {
+                    <p>{selectedPhoto.description.length===0?"Brak opisu":"Opis: "+selectedPhoto.description}</p>
+                    <p>Data dodania:  
+                        {" "+new Date(selectedPhoto.added).toLocaleDateString("pl-PL", {
                         day: "numeric",
                         month: "long",
                         year: "numeric",
@@ -245,6 +336,60 @@ function Profile({ refr }) {
                     </div>
                 </div>
                 )}
+                {showCatalogModal && (
+                    <div className={photoStyles.modal_overlay} onClick={() => setShowCatalogModal(false)}>
+                        <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+                        <span className={photoStyles.close_modal} onClick={() => setShowCatalogModal(false)}>
+                            <img src={closeImg} alt="Close" className={photoStyles.icon_close} />
+                        </span>
+                        <h3>Dodaj katalog</h3>
+                        <form onSubmit={handleCatalogSubmit} className={styles.photo_form}>
+                            <label>Nazwa katalogu:</label>
+                            <input
+                            type="text"
+                            name="name"
+                            value={newCatalog.name}
+                            onChange={handleCatalogChange}
+                            required
+                            />
+
+                            <label>Wybierz zdjęcia:</label>
+                            <div className={photoStyles.photo_grid}>
+                            {Array.isArray(photos) && photos.map((photo) => (
+                                <div key={photo.id_photo} className={photoStyles.photo_card}>
+                                <img
+                                    src={`/api/${photo.path}`}
+                                    alt={photo.title}
+                                    className={photoStyles.photo}
+                                    onClick={(e) => {
+                                    e.stopPropagation(); // Prevent the modal close click event
+                                    togglePhotoSelect(photo.id_photo); // Toggle the selection
+                                    }}
+                                />
+
+                                <span
+                                    className={`${photoStyles.checkmark_button} ${
+                                    newCatalog.selectedPhotos.includes(photo.id_photo) ? 'selected' : ''
+                                    }`}
+                                    onClick={(e) => {
+                                    e.stopPropagation(); // Prevent triggering the image click event
+                                    togglePhotoSelect(photo.id_photo); // Toggle the photo selection
+                                    }}
+                                >
+                                    {newCatalog.selectedPhotos.includes(photo.id_photo) && (
+                                    <img src={tickImg} alt="Tick" className={photoStyles.icon_tick} />
+                                    )}
+                                </span>
+                                </div>
+                            ))}
+                            </div>
+
+                            <button type="submit">Utwórz katalog</button>
+                        </form>
+                        </div>
+                    </div>
+                    )}
+
             </main>
         </div>
     );

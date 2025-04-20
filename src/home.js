@@ -86,7 +86,7 @@ function Home() {
               <img src={`/api/${selectedPhoto.path}`} alt={selectedPhoto.title} />
               <h4>Tytuł: {selectedPhoto.title}</h4>
               <p>Autor: {selectedPhoto.username}</p>
-              <p>{selectedPhoto.description.length==0?"Brak opisu":"Opis: "+selectedPhoto.description}</p>
+              <p>{selectedPhoto.description.length===0?"Brak opisu":"Opis: "+selectedPhoto.description}</p>
               <p>Data dodania: 
                 {new Date(selectedPhoto.added).toLocaleDateString("pl-PL", {
                   day: "numeric",

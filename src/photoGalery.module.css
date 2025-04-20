@@ -119,3 +119,77 @@
     transform: scale(1.1);
     opacity: 1;
 }
+
+/* Checkmark button */
+.photo_card .checkmark_button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 50%;
+    border: 2px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 5; /* Ensure the button is above the image */
+    transition: background-color 0.3s ease;
+    user-select: none;
+    opacity: 85%;
+  }
+  
+  .photo_card img{
+    -webkit-user-drag: none;
+  }
+
+/* Default hover effect (scale image on hover) */
+.photo_card img:hover {
+    transform: scale(1.1); /* Default scaling */
+    transition: transform 0.3s ease; /* Smooth transition */
+  }
+  
+  /* Smaller screens: smaller scaling effect */
+  @media (max-width: 700px) {
+    .photo_card img:hover {
+      transform: scale(1.05); /* Less scale on small screens */
+    }
+  }
+  
+  /* Medium screens: moderate scaling */
+  @media (max-width: 1070px) {
+    .photo_card img:hover {
+      transform: scale(1.08); /* Slightly more scale on medium screens */
+    }
+  }
+  
+  /* Larger screens: stronger scaling effect */
+  @media (min-width: 1071px) {
+    .photo_card img:hover {
+      transform: scale(1.12); /* More scale on larger screens */
+    }
+  }
+  .photo_card .checkmark_button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* The tick icon inside the button */
+  .photo_card .checkmark_button .icon_tick {
+    margin-top: 10px;
+    object-fit: contain;
+    user-select: none;
+    
+  }
+  
+  /* Ensure the photo card is positioned relatively for the absolute positioning of the button */
+  .photo_card {
+    position: relative;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid gray;
+    user-select: none;
+  }
+  
