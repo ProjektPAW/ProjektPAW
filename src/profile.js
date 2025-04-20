@@ -159,7 +159,6 @@ function Profile({ refr }) {
 
     const [newCatalog, setNewCatalog] = useState({
         name: '',
-        description: '',
         selectedPhotos: [] // This will store the ids of selected photos for the catalog
       });
       
@@ -193,7 +192,6 @@ function Profile({ refr }) {
         // Example API call (pseudo-code):
         const newCatalogData = {
           name: newCatalog.name,
-          description: newCatalog.description,
           photos: newCatalog.selectedPhotos
         };
         
@@ -325,13 +323,13 @@ function Profile({ refr }) {
                             <img src={closeImg} alt="Close" className={photoStyles.icon_close}/>
                         </span>
                         <img src={`/api/${selectedEdit.path}`} alt={selectedEdit.title} />
-                        <form onSubmit={handleEditSubmit} className={styles.photo_form}>
+                        <form className={styles.photo_form}>
                             <label>Tytuł:</label>
                             <input type="text" name="title" onChange={handleEditChange} required defaultValue={selectedEdit.title}/>
                             <label>Opis:</label>
                             <textarea name="description" onChange={handleEditChange} defaultValue={selectedEdit.description}/>
                             <label><input type="checkbox" name="is_private" onChange={handleEditChange} defaultChecked={selectedEdit.is_private}/> Prywatne</label>
-                            <button type="submit">Zapisz zmiany</button>
+                            <button type="button" onClick={handleEditSubmit} >Zapisz zmiany</button>
                         </form>
                     </div>
                 </div>

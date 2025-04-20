@@ -148,6 +148,7 @@
 .photo_card img:hover {
     transform: scale(1.1); /* Default scaling */
     transition: transform 0.3s ease; /* Smooth transition */
+    cursor:pointer;
   }
   
   /* Smaller screens: smaller scaling effect */
