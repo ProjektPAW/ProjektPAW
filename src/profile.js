@@ -34,15 +34,22 @@ function Profile({ refr }) {
     const [showCatalogModal, setShowCatalogModal] = useState(false);
     const [photos, setPhotos] = useState([]);
     const [catalogs, setCatalogs] = useState([]);
+    const allOption = { id_catalog: -1, name: 'All', id_user: null };
 
     useEffect(() => {
-        const fetchedCatalogs = [
-          { id: 1, name: "Vacation 2021" },
-          { id: 2, name: "Birthday Party" },
-          { id: 3, name: "Family Reunion" },
-          { id: 4, name: "Nature Shots" },
-        ];
-        setCatalogs(fetchedCatalogs);
+        axios
+        .get("/api/getusercatalogs", {
+            headers: {
+            Authorization: localStorage.getItem("jwtToken"),
+            },
+        })
+        .then((response) => {
+            setCatalogs(response.data);
+            setCatalogs([allOption, ...response.data]);
+        })
+        .catch((error) => {
+            console.error("Błąd pobierania folderów:", error);
+        });
       }, []);
       
     useEffect(() => {
@@ -104,7 +111,6 @@ function Profile({ refr }) {
                     return;
                 }
                 else if(response.status === 201){
-                    console.log(response.data);
                     sendSuccess("Photo added successfully!");
                     setShowModal(false);
                     refr();
@@ -141,7 +147,6 @@ function Profile({ refr }) {
                     return;
                 }
                 else if(response.status === 201){
-                    console.log(response.data);
                     sendSuccess("Photo edited successfully!");
                     setShowModal(false);
                     refr();
@@ -157,10 +162,7 @@ function Profile({ refr }) {
         }
     };
 
-    const [newCatalog, setNewCatalog] = useState({
-        name: '',
-        selectedPhotos: [] // This will store the ids of selected photos for the catalog
-      });
+    const [newCatalog, setNewCatalog] = useState({name: ''});
       
       // Handle changes to the catalog form (name and description)
       const handleCatalogChange = (e) => {
@@ -170,40 +172,99 @@ function Profile({ refr }) {
           [name]: value
         }));
       };
-      
-      const togglePhotoSelect = (photoId) => {
-        setNewCatalog((prevCatalog) => {
-          const isSelected = prevCatalog.selectedPhotos.includes(photoId);
-          const updatedSelectedPhotos = isSelected
-            ? prevCatalog.selectedPhotos.filter((id) => id !== photoId) // Remove if already selected
-            : [...prevCatalog.selectedPhotos, photoId]; // Add if not selected
-      
-          return {
-            ...prevCatalog,
-            selectedPhotos: updatedSelectedPhotos,
-          };
-        });
-      };
-      
-      // Handle form submission for creating the catalog
-      const handleCatalogSubmit = async (e) => {
-        e.preventDefault();
-        // You would want to send the catalog data to your backend here:
-        // Example API call (pseudo-code):
-        const newCatalogData = {
-          name: newCatalog.name,
-          photos: newCatalog.selectedPhotos
-        };
-        
-        /*try {
-         const response = await api.createCatalog(newCatalogData);
-          console.log('Catalog created:', response);
-          setShowCatalogModal(false); // Close modal after successful catalog creation
-        } catch (error) {
-          console.error('Error creating catalog:', error);
+
+      const getCatalogPhotos = (e) => {
+        let id= e.target.value;
+        if(id>-1){
+            axios
+                .get("/api/getphotosincatalog", {
+                    params: { id_catalog: id },
+                    headers: {
+                    Authorization: localStorage.getItem("jwtToken"),
+                    },
+                })
+                .then((response) => {
+                    setPhotos(response.data);
+                })
+                .catch((error) => {
+                    console.error("Błąd podczas pobierania zdjęć:", error);
+                });
         }
-          */
+        else{
+            axios
+                .get("/api/getuserphotos", {
+                    headers: {
+                    Authorization: localStorage.getItem("jwtToken"),
+                    },
+                })
+                .then(response => {
+                    setPhotos(response.data);
+                })
+                .catch(error => {
+                    console.error("Błąd podczas pobierania zdjęć:", error);
+                });
+        }
+      };
+
+      const deletePhoto = async (id) => {
+        try {
+            axios
+                .delete("/api/deletephoto", {
+                    data: { id_photo: id },
+                    headers: {
+                    Authorization: localStorage.getItem("jwtToken"),
+                    },
+                }) 
+                .then((response) => {
+                    if (response.status == 200) {
+                        sendError(response.data || "deleting failed.");
+                        return;
+                    }
+                    sendSuccess("Photo deleted successfully!");
+                    refr();
+                })
+                .catch((error) => {
+                    console.error("Błąd:", error);
+                    sendError("Photo deleting failed.");
+                });
+        } catch (error) {
+            sendError("Server error: " + error.message);
+        }
+
     };
+
+    const CreateCatalogue = async (e) => {
+        if (!newCatalog || newCatalog.name=="" || newCatalog.name.includes(' ')) {
+            sendWarning("Set valid name!");
+            return;
+        }
+        
+        try {
+            axios
+                .post("/api/addcatalog", newCatalog, {
+                    headers: {
+                    Authorization: localStorage.getItem("jwtToken"),
+                    },
+                }) 
+                .then((response) => {
+                    if (response.status === 200) {
+                        sendError(response.data.message || "Folder adding failed.");
+                        return;
+                    }
+                    sendSuccess("Folder added successfully!");
+                    setShowCatalogModal(false);
+                    refr();
+                })
+                .catch((error) => {
+                    console.error("Błąd:", error);
+                    sendError("Folder adding failed.");
+                });
+        } catch (error) {
+            sendError("Server error: " + error.message);
+        }
+
+    };
+
     return (
         <div className={styles.page_container}>
             <main className={styles.content}>
@@ -238,9 +299,9 @@ function Profile({ refr }) {
                     <div className={styles.catalog_container}>
                         <h2>Moje Zdjęcia</h2>
                         <div className={styles.catalog_group}>
-                            <select className={styles.catalog_dropdown}>
+                            <select onChange={getCatalogPhotos} className={styles.catalog_dropdown}>
                             {catalogs.map((catalog) => (
-                                <option key={catalog.id} value={catalog.id}>
+                                <option key={catalog.id_catalog} value={catalog.id_catalog}>
                                 {catalog.name}
                                 </option>
                             ))}
@@ -254,7 +315,7 @@ function Profile({ refr }) {
                 </div>
                 
                 <div className={photoStyles.photo_grid}>
-                {Array.isArray(photos) && photos.map((photo) => (
+                {!Array.isArray(photos)? <div> <p>katalog pusty</p> </div> :( photos.map((photo) => (
                     <div key={photo.id_photo} className={photoStyles.photo_card}>
                     <img
                         src={`/api/${photo.path}`}
@@ -283,7 +344,7 @@ function Profile({ refr }) {
                                         });
                                     }}/>
                             </button>
-                            <button className ={styles.delete_btn}>
+                            <button className ={styles.delete_btn} onClick={() => deletePhoto(photo.id_photo)}>
                                 <img src={deleteImg}
                                     alt = "Delete"
                                     className={styles.icon_delete}
@@ -293,7 +354,7 @@ function Profile({ refr }) {
                     </div>
                     <p>{photo.description.length > 25 ? photo.description.slice(0, 25) + '...' : photo.description}</p>
                     </div>
-                ))}
+                )))}
                 </div>
                 {selectedPhoto && (
                 <div className={photoStyles.modal_overlay} onClick={() => setSelectedPhoto(null)}>
@@ -341,48 +402,10 @@ function Profile({ refr }) {
                             <img src={closeImg} alt="Close" className={photoStyles.icon_close} />
                         </span>
                         <h3>Dodaj katalog</h3>
-                        <form onSubmit={handleCatalogSubmit} className={styles.photo_form}>
+                        <form className={styles.photo_form}>
                             <label>Nazwa katalogu:</label>
-                            <input
-                            type="text"
-                            name="name"
-                            value={newCatalog.name}
-                            onChange={handleCatalogChange}
-                            required
-                            />
-
-                            <label>Wybierz zdjęcia:</label>
-                            <div className={photoStyles.photo_grid}>
-                            {Array.isArray(photos) && photos.map((photo) => (
-                                <div key={photo.id_photo} className={photoStyles.photo_card}>
-                                <img
-                                    src={`/api/${photo.path}`}
-                                    alt={photo.title}
-                                    className={photoStyles.photo}
-                                    onClick={(e) => {
-                                    e.stopPropagation(); // Prevent the modal close click event
-                                    togglePhotoSelect(photo.id_photo); // Toggle the selection
-                                    }}
-                                />
-
-                                <span
-                                    className={`${photoStyles.checkmark_button} ${
-                                    newCatalog.selectedPhotos.includes(photo.id_photo) ? 'selected' : ''
-                                    }`}
-                                    onClick={(e) => {
-                                    e.stopPropagation(); // Prevent triggering the image click event
-                                    togglePhotoSelect(photo.id_photo); // Toggle the photo selection
-                                    }}
-                                >
-                                    {newCatalog.selectedPhotos.includes(photo.id_photo) && (
-                                    <img src={tickImg} alt="Tick" className={photoStyles.icon_tick} />
-                                    )}
-                                </span>
-                                </div>
-                            ))}
-                            </div>
-
-                            <button type="submit">Utwórz katalog</button>
+                            <input type="text"name="name" value={newCatalog.name} onChange={handleCatalogChange} required/>
+                            <button type="button" onClick={() => CreateCatalogue()}>Utwórz katalog</button>
                         </form>
                         </div>
                     </div>
