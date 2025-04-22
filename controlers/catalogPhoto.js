@@ -7,7 +7,7 @@ async function getPhotosInCatalog(token,req,res) {
     let id_user = await auth.autenthicate(token);
     if(id_user < 0)
         return res.status(200).send("Invalid token");
-    const {id_catalog} = req.body;
+    const {id_catalog} = req.query;
     let result = await catalogphotosdao.getPhotosInCatalog(id_catalog,id_user);
     if(result.rowCount<=0)
         return res.status(200).send("Photos in catalog not found");
