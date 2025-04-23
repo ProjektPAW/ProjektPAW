@@ -22,6 +22,20 @@
     object-fit: contain;
 }
 
+.photo_form .delete_catalog_btn {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #ff0000;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.photo_form .delete_catalog_btn:hover {
+    background-color: #8b0000;
+}
+
 .edit_btn{
     background-color: white;
     width: 30px;
@@ -241,3 +255,18 @@
     gap:10px;
     align-items: center;
 }
+.catalog_empty{
+    width:100vw;
+    text-align: center;
+    display:inline-block;
+    margin:auto;
+}
+.catalog_empty p{
+    font-weight: bold;
+    font-size: 20px;
+}
+.select_catalog{
+    max-height: 200px;
+    overflow-y: scroll;
+}
+

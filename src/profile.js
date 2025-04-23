@@ -7,7 +7,6 @@ import privateImg from "./public/imgs/private.png";
 import closeImg from "./public/imgs/close.png";
 import editImg from "./public/imgs/edit.png";
 import deleteImg from "./public/imgs/bin.png";
-import tickImg from "./public/imgs/check.png";
 
 function Profile({ refr }) {
     const [userData, setUserData] = useState({
@@ -35,7 +34,11 @@ function Profile({ refr }) {
     const [photos, setPhotos] = useState([]);
     const [catalogs, setCatalogs] = useState([]);
     const allOption = { id_catalog: -1, name: 'All', id_user: null };
+    const [catalogList, setCatalogList] = useState([]);
 
+    const [showEditCatalogModal, setShowEditCatalogModal] = useState(false);
+    const [selectedCatalogId, setSelectedCatalogId] = useState(-1);
+    const [newCatalogName, setNewCatalogName] = useState("");
     useEffect(() => {
         axios
         .get("/api/getusercatalogs", {
@@ -99,7 +102,7 @@ function Profile({ refr }) {
         }
         try {
             axios
-            .post("/api/addphoto",formData, {
+            .post("/api/addphoto",{...formData, catalogs_to_add:catalogList}, {
                 headers: {
                 Authorization: localStorage.getItem("jwtToken"),
                 "Content-Type": "multipart/form-data"
@@ -135,7 +138,7 @@ function Profile({ refr }) {
     const handleEditSubmit = async (e) => {
         try {
             axios
-            .patch("/api/editphoto",editFormData, {
+            .patch("/api/editphoto",{...editFormData, catalogs_to_add:catalogList}, {
                 headers: {
                 Authorization: localStorage.getItem("jwtToken"),
                 "Content-Type": "application/json"
@@ -173,12 +176,21 @@ function Profile({ refr }) {
         }));
       };
 
+      const handleSetCatalogs = (e)=>{
+        const { name, checked } = e.target;
+        setCatalogList((prevState) => ({
+          ...prevState,
+          [name]: checked
+        }));
+      }
+
       const getCatalogPhotos = (e) => {
-        let id= e.target.value;
-        if(id>-1){
+        setSelectedCatalogId(e.target.value);
+        
+        if(selectedCatalogId>-1){
             axios
                 .get("/api/getphotosincatalog", {
-                    params: { id_catalog: id },
+                    params: { id_catalog: selectedCatalogId},
                     headers: {
                     Authorization: localStorage.getItem("jwtToken"),
                     },
@@ -262,9 +274,64 @@ function Profile({ refr }) {
         } catch (error) {
             sendError("Server error: " + error.message);
         }
-
     };
 
+
+    const handleEditCatalogSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!selectedCatalogId  || newCatalogName.includes(" ")) {
+            sendWarning("Set a valid new name!");
+            return;
+        }
+
+        try {
+            const response = await axios.patch(
+                "/api/editcatalog",
+                {
+                    id_catalog: selectedCatalogId,
+                    name: newCatalogName,
+                },
+                {
+                    headers: {
+                        Authorization: localStorage.getItem("jwtToken"),
+                    },
+                }
+            );
+
+            sendSuccess("Katalog został zaktualizowany!");
+            setShowEditCatalogModal(false);
+            refr();
+        } catch (error) {
+            console.error("Błąd edycji:", error);
+            sendError("Edycja katalogu nie powiodła się.");
+        }
+    };
+      
+    const handleDeleteCatalog = async () => {
+        if (!selectedCatalogId) {
+            sendWarning("Nie wybrano katalogu.");
+            return;
+        }
+    
+        try {
+            const response = await axios.delete("/api/deletecatalog", {
+                headers: {
+                    Authorization: localStorage.getItem("jwtToken"),
+                },
+                data: {
+                    id_catalog: selectedCatalogId,
+                },
+            });
+    
+            sendSuccess("Katalog został usunięty.");
+            setShowEditCatalogModal(false);
+            refr(); // ← odświeżenie listy katalogów
+        } catch (error) {
+            console.error("Błąd usuwania:", error);
+            sendError("Usunięcie katalogu nie powiodło się.");
+        }
+    };
     return (
         <div className={styles.page_container}>
             <main className={styles.content}>
@@ -277,9 +344,11 @@ function Profile({ refr }) {
                     </button>
                 </div>
                 {showModal && (
-                    <div className={styles.modal_overlay}>
-                        <div className={styles.modal_content}>
-                            <span className={styles.close_modal} onClick={() => setShowModal(false)}>x</span>
+                    <div className={styles.modal_overlay} onClick={() => setShowModal(false)}>
+                        <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+                        <span className={photoStyles.close_modal} onClick={() => setShowModal(false)}>
+                        <img src={closeImg} alt="Close" className={photoStyles.icon_close}/>
+                        </span>
                             <h3>Dodaj zdjęcie</h3>
                             <form onSubmit={handleSubmit} className={styles.photo_form}>
                                 <label>Tytuł:</label>
@@ -289,6 +358,12 @@ function Profile({ refr }) {
                                 <label><input type="checkbox" name="is_private" onChange={handleChange} /> Prywatne</label>
                                 <label>Zdjęcie:</label>
                                 <input type="file" name="photo" accept="image/*" onChange={handleChange} required />
+                                <label for="catalog">Dodaj do katalogu</label>
+                                <div className={styles.select_catalog}>
+                                {catalogs.map((catalog) => (
+                                    <div><input type="checkbox" name={catalog.id_catalog} onChange={handleSetCatalogs}/><label>{catalog.name}</label></div>
+                                ))}
+                                </div>
                                 <button type="submit">Dodaj</button>
                             </form>
                         </div>
@@ -301,13 +376,16 @@ function Profile({ refr }) {
                         <div className={styles.catalog_group}>
                             <select onChange={getCatalogPhotos} className={styles.catalog_dropdown}>
                             {catalogs.map((catalog) => (
-                                <option key={catalog.id_catalog} value={catalog.id_catalog}>
-                                {catalog.name}
+                                <option key={catalog.id_catalog} name={catalog.name} value={catalog.id_catalog}>
+                                    {catalog.name}
                                 </option>
                             ))}
                             </select>
                             <button className={styles.add_catalog_btn} onClick={() => setShowCatalogModal(true)}>
                                 Dodaj katalog
+                            </button>
+                            <button className={styles.add_catalog_btn} onClick={() => setShowEditCatalogModal(true)}>
+                                Edytuj katalogi
                             </button>
                         </div>
 
@@ -315,7 +393,7 @@ function Profile({ refr }) {
                 </div>
                 
                 <div className={photoStyles.photo_grid}>
-                {!Array.isArray(photos)? <div> <p>katalog pusty</p> </div> :( photos.map((photo) => (
+                {!Array.isArray(photos)||photos.length===0? <div className={styles.catalog_empty}> <p>Katalog pusty</p> </div> :( photos.map((photo) => (
                     <div key={photo.id_photo} className={photoStyles.photo_card}>
                     <img
                         src={`/api/${photo.path}`}
@@ -327,7 +405,7 @@ function Profile({ refr }) {
                         <div className={styles.padlock_container}>
                             {photo.is_private?(
                                 <img src={privateImg} alt="Private" className={styles.icon} />):("")}
-                            <h4>{photo.title.length > 25 ? photo.title.slice(0, 25) + '...' : photo.title}</h4>
+                            <h4>{photo.title.length > 20 ? photo.title.slice(0, 20) + '...' : photo.title}</h4>
                         </div>
                         <div>
                             <button className={styles.edit_btn}>
@@ -390,6 +468,12 @@ function Profile({ refr }) {
                             <label>Opis:</label>
                             <textarea name="description" onChange={handleEditChange} defaultValue={selectedEdit.description}/>
                             <label><input type="checkbox" name="is_private" onChange={handleEditChange} defaultChecked={selectedEdit.is_private}/> Prywatne</label>
+                            <label for="catalog">Dodaj do katalogu</label>
+                            <div className={styles.select_catalog}>
+                            {catalogs.map((catalog) => (
+                                <div><input type="checkbox" name={catalog.id_catalog} onChange={handleSetCatalogs}/><label>{catalog.name}</label></div>
+                            ))}
+                            </div>
                             <button type="button" onClick={handleEditSubmit} >Zapisz zmiany</button>
                         </form>
                     </div>
@@ -409,8 +493,39 @@ function Profile({ refr }) {
                         </form>
                         </div>
                     </div>
-                    )}
+                )}
+                {showEditCatalogModal && (
+                <div className={photoStyles.modal_overlay} onClick={() => setShowEditCatalogModal(false)}>
+                    <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+                    <span className={photoStyles.close_modal} onClick={() => setShowEditCatalogModal(false)}>
+                        <img src={closeImg} alt="Close" className={photoStyles.icon_close} />
+                    </span>
 
+                    <h3>Edytuj katalog</h3>
+
+                    <form onSubmit={handleEditCatalogSubmit} className={styles.photo_form}>
+                        <label>Nowa nazwa:</label>
+                        <input
+                        type="text"
+                        name={selectedCatalogId}
+                        defaultValue={catalogs.find((element)=> element.id_catalog==selectedCatalogId).name}
+                        onChange={(e) => setNewCatalogName(e.target.value)}
+                        required
+                        />
+
+                        <button type="submit">Zapisz zmiany</button>
+
+                        <button
+                            type="button"
+                            className= {styles.delete_catalog_btn}
+                            onClick={handleDeleteCatalog}
+                        >
+                        Usuń katalog
+                        </button>
+                    </form>
+                    </div>
+                </div>
+                )}
             </main>
         </div>
     );
