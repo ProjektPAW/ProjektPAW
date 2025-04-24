@@ -269,4 +269,8 @@
     max-height: 200px;
     overflow-y: scroll;
 }
-
+.invisible_button{
+    display: inline-block;
+    width: 123px;
+    opacity: 0;
+}

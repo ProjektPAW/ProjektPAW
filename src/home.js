@@ -39,7 +39,7 @@ function Home() {
               loop={photos.length > 3}
               centeredSlides={true}
               slidesPerView={2}
-              initialSlide={Math.floor(photos.length / 2)} // 👈 this is the key
+              initialSlide={Math.floor(photos.length / 2)}
               effect="coverflow"
               coverflowEffect={{
                 rotate: 0,

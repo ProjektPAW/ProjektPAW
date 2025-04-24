@@ -260,6 +260,9 @@ function Profile({ refr }) {
       };
 
       const deletePhoto = async (id) => {
+        const confirmDelete = window.confirm("Na pewno chcesz usunąć to zdjęcie?");
+        if (!confirmDelete) return;
+        
         try {
             axios
                 .delete("/api/deletephoto", {
@@ -350,6 +353,9 @@ function Profile({ refr }) {
     };
       
     const handleDeleteCatalog = async () => {
+        const confirmDelete = window.confirm("Na pewno chcesz usunąć ten katalog?");
+        if (!confirmDelete) return;
+
         if (!selectedCatalogId) {
             sendWarning("Nie wybrano katalogu.");
             return;
@@ -427,10 +433,12 @@ function Profile({ refr }) {
                             <button className={styles.add_catalog_btn} onClick={() => setShowCatalogModal(true)}>
                                 Dodaj katalog
                             </button>
-                            {selectedCatalogId>=0&&(
+                            {selectedCatalogId>=0?(
                             <button className={styles.add_catalog_btn} onClick={() => setShowEditCatalogModal(true)}>
                                 Edytuj katalog
-                            </button>)}
+                            </button>):
+                            <span className={styles.invisible_button}></span>
+                            }
                         </div>
 
                     </div>
