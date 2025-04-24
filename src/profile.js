@@ -35,6 +35,8 @@ function Profile({ refr }) {
     const [catalogs, setCatalogs] = useState([]);
     const allOption = { id_catalog: -1, name: 'All', id_user: null };
     const [catalogList, setCatalogList] = useState([]);
+    const [checkedCatalogsList, setCheckedCatalogsList] = useState([]);
+    const [catalogsLoaded, setCatalogsLoaded] = useState(false);
 
     const [showEditCatalogModal, setShowEditCatalogModal] = useState(false);
     const [selectedCatalogId, setSelectedCatalogId] = useState(-1);
@@ -93,6 +95,36 @@ function Profile({ refr }) {
         else
             setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+    const prepareEditForm  = (photo) => {
+        setCatalogsLoaded(false);
+        setSelectedEdit(photo);
+        setEditFormData({
+            title: photo.title,
+            description: photo.description,
+            is_private: photo.is_private,
+            id_photo: photo.id_photo
+        });
+        
+        axios
+            .get("/api/getphotocatalogs", {
+                params: {id_photo: photo.id_photo},
+                headers: {
+                Authorization: localStorage.getItem("jwtToken"),
+                },
+            })
+            .then((response) => {
+                let temp=[];
+                for(var i in response.data){
+                   temp.push(response.data[i].id_catalog);
+                }
+                setCheckedCatalogsList(temp);
+                setCatalogsLoaded(true);
+            })
+            .catch((error) => {
+                console.error("Błąd pobierania folderów:", error);
+            });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -101,8 +133,16 @@ function Profile({ refr }) {
             return;
         }
         try {
+            let data = new FormData();
+
+            data.append("title", formData.title);
+            data.append("description", formData.description);
+            data.append("is_private", formData.is_private);
+            data.append("photo", formData.photo);
+            data.append("catalogs_to_add", JSON.stringify(catalogList));
+
             axios
-            .post("/api/addphoto",{...formData, catalogs_to_add:catalogList}, {
+            .post("/api/addphoto",data, {
                 headers: {
                 Authorization: localStorage.getItem("jwtToken"),
                 "Content-Type": "multipart/form-data"
@@ -185,12 +225,13 @@ function Profile({ refr }) {
       }
 
       const getCatalogPhotos = (e) => {
-        setSelectedCatalogId(e.target.value);
-        
-        if(selectedCatalogId>-1){
+        let id=e.target.value;
+        setSelectedCatalogId(id);
+
+        if(id>-1){
             axios
                 .get("/api/getphotosincatalog", {
-                    params: { id_catalog: selectedCatalogId},
+                    params: { id_catalog: id},
                     headers: {
                     Authorization: localStorage.getItem("jwtToken"),
                     },
@@ -358,10 +399,12 @@ function Profile({ refr }) {
                                 <label><input type="checkbox" name="is_private" onChange={handleChange} /> Prywatne</label>
                                 <label>Zdjęcie:</label>
                                 <input type="file" name="photo" accept="image/*" onChange={handleChange} required />
-                                <label for="catalog">Dodaj do katalogu</label>
+                                <label>Dodaj do katalogu</label>
                                 <div className={styles.select_catalog}>
-                                {catalogs.map((catalog) => (
-                                    <div><input type="checkbox" name={catalog.id_catalog} onChange={handleSetCatalogs}/><label>{catalog.name}</label></div>
+                                {catalogs.map((catalog) => ( 
+                                    catalog.id_catalog>=0&&(
+                                    <div key={catalog.id_catalog}><input type="checkbox" name={catalog.id_catalog} onChange={handleSetCatalogs}/><label>{catalog.name}</label></div>
+                                    )
                                 ))}
                                 </div>
                                 <button type="submit">Dodaj</button>
@@ -384,9 +427,10 @@ function Profile({ refr }) {
                             <button className={styles.add_catalog_btn} onClick={() => setShowCatalogModal(true)}>
                                 Dodaj katalog
                             </button>
+                            {selectedCatalogId>=0&&(
                             <button className={styles.add_catalog_btn} onClick={() => setShowEditCatalogModal(true)}>
-                                Edytuj katalogi
-                            </button>
+                                Edytuj katalog
+                            </button>)}
                         </div>
 
                     </div>
@@ -412,15 +456,7 @@ function Profile({ refr }) {
                                 <img src={editImg} 
                                     alt="Edit" 
                                     className={styles.icon_edit} 
-                                    onClick={() => {
-                                        setSelectedEdit(photo);
-                                        setEditFormData({
-                                            title: photo.title,
-                                            description: photo.description,
-                                            is_private: photo.is_private,
-                                            id_photo: photo.id_photo
-                                        });
-                                    }}/>
+                                    onClick={() => prepareEditForm(photo)}/>
                             </button>
                             <button className ={styles.delete_btn} onClick={() => deletePhoto(photo.id_photo)}>
                                 <img src={deleteImg}
@@ -468,11 +504,19 @@ function Profile({ refr }) {
                             <label>Opis:</label>
                             <textarea name="description" onChange={handleEditChange} defaultValue={selectedEdit.description}/>
                             <label><input type="checkbox" name="is_private" onChange={handleEditChange} defaultChecked={selectedEdit.is_private}/> Prywatne</label>
-                            <label for="catalog">Dodaj do katalogu</label>
+                            <label>Dodaj do katalogu</label>
                             <div className={styles.select_catalog}>
                             {catalogs.map((catalog) => (
-                                <div><input type="checkbox" name={catalog.id_catalog} onChange={handleSetCatalogs}/><label>{catalog.name}</label></div>
-                            ))}
+                                catalog.id_catalog>=0&&catalogsLoaded&&(
+                                <div key={catalog.id_catalog}>
+                                <input
+                                    type="checkbox"
+                                    name={catalog.id_catalog}
+                                    onChange={handleSetCatalogs}
+                                    defaultChecked={ checkedCatalogsList.includes(catalog.id_catalog)?true:false }
+                              />
+                              <label>{catalog.name}</label></div>
+                            )))}
                             </div>
                             <button type="button" onClick={handleEditSubmit} >Zapisz zmiany</button>
                         </form>
