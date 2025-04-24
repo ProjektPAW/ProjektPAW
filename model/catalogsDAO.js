@@ -15,6 +15,13 @@ async function getUserCatalogs(id_user) {
     );
 }
 
+async function getUserCatalogsId(id_user) {
+    return await pool.query(
+        "select id_catalog from catalog where id_user=$1;",
+        [id_user]
+    );
+}
+
 async function getUserCatalogById(id_catalog,id_user) {
     return await pool.query(
         "select * from catalog where id_catalog=$1 and id_user=$2;",
@@ -45,6 +52,7 @@ async function deleteCatalog(id_catalog,id_user) {
 
 module.exports={
     getUserCatalogs,
+    getUserCatalogsId,
     getUserCatalogById,
     addCatalog,
     editCatalog,

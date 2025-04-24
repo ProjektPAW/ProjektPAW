@@ -17,10 +17,24 @@ async function getPhotosInCatalog(id_catalog,id_user) {
     );
 }
 
+async function getPhotoCatalogs(id_photo) {
+    return await pool.query(
+        `select * from catalog_photo where id_photo=$1`,
+        [id_photo]
+    );
+}
+
 async function addPhotoToCatalog(id_catalog,id_photo) {
     return await pool.query(
         `insert into catalog_photo(id_photo,id_catalog) values($1,$2);`,
         [id_photo,id_catalog]
+    );
+}
+
+async function deletePhotoFromAllCatalogs(id_photo) {
+    return await pool.query(
+        `delete from catalog_photo where id_photo=$1`,
+        [id_photo]
     );
 }
 
@@ -35,6 +49,8 @@ async function checkPhotoAlreadyAdded(id_catalog,id_photo,id_user) {
 
 module.exports={
     getPhotosInCatalog,
+    deletePhotoFromAllCatalogs,
     addPhotoToCatalog,
+    getPhotoCatalogs,
     checkPhotoAlreadyAdded,
 }

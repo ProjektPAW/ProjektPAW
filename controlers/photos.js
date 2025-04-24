@@ -1,4 +1,6 @@
 const photodao = require("../model/photosDAO");
+const catalogsdao = require("../model/catalogsDAO");
+const catalogPhotoDAO = require("../model/catalogPhotoDAO");
 const auth = require("./auth");
 const fs = require("fs");
 
@@ -15,7 +17,10 @@ async function addPhoto(token,req,res) {
         console.log("No file data");
         return res.status(200).send("No file data");
     }
-    const { title,is_private,description } = req.body;
+
+    const {title,is_private,description} = req.body;
+    const catalogs_to_add = JSON.parse(req.body.catalogs_to_add);
+
     let file=req.files.photo;
     let path = "files/";
     if (!fs.existsSync(path)) {
@@ -24,6 +29,20 @@ async function addPhoto(token,req,res) {
     path+=Date.now()+"__"+file.name;
     file.mv(path);
     let result = await photodao.addPhoto(title,path,is_private,new Date(),description,id_user);
+    
+    let id_photo=result.rows[0].id_photo;
+    let userCatalogs=await catalogsdao.getUserCatalogsId(id_user);
+    let catalogsArray=[];
+    for(var i in userCatalogs.rows)
+        catalogsArray.push(userCatalogs.rows[i].id_catalog);
+
+    for(i in catalogs_to_add){
+        i=parseInt(i);
+       
+        if(catalogs_to_add[i]==true && catalogsArray.includes(i)){
+            catalogPhotoDAO.addPhotoToCatalog(i,id_photo);
+        }
+    }
     return res.status(201).send("Photo added succesfully");
 }
 async function getUserPhotos(token, res){
@@ -37,7 +56,8 @@ async function editPhoto(token, req, res){
     let id_user = await auth.autenthicate(token);
     if(id_user < 0)
         return res.status(200).send("Invalid token");
-    const {title,is_private,description,id_photo} = req.body;
+    
+    const {title,is_private,description,id_photo, catalogs_to_add} = req.body;
     let result = await photodao.getPhotoById(id_photo,id_user);
     if(result.rowCount<=0)
         return res.status(200).send("Photo not found");
@@ -51,6 +71,19 @@ async function editPhoto(token, req, res){
         return res.status(500).send("File rename error: "+error);
     else{
         let resultEdit = await photodao.editPhoto(title,is_private,description,id_photo,newPath);
+
+        catalogPhotoDAO.deletePhotoFromAllCatalogs(id_photo);
+        let userCatalogs=await catalogsdao.getUserCatalogsId(id_user);
+        let catalogsArray=[];
+        for(var i in userCatalogs.rows)
+            catalogsArray.push(userCatalogs.rows[i].id_catalog);
+
+        for(i in catalogs_to_add){
+            i=parseInt(i);
+            if(catalogs_to_add[i]==true && catalogsArray.includes(i)){
+                catalogPhotoDAO.addPhotoToCatalog(i,id_photo);
+            }
+        }
         return res.status(201).send("Update successful");
     }
 }

@@ -87,6 +87,11 @@ router.get("/getusercatalogs", async (req, res) => {
   catalogs.getUserCatalogs(token,res);
 });
 
+router.get("/getphotocatalogs", async (req, res) => {
+  const token=req.headers.authorization;
+  catalogphoto.getPhotoCatalogs(token,req,res);
+});
+
 router.post("/addcatalog", async (req, res) => {
   const token=req.headers.authorization;
   catalogs.addCatalog(token,req,res);

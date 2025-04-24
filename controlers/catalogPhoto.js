@@ -32,9 +32,26 @@ async function addPhotoToCatalog(token,req,res) {
     return res.status(201).send("Photo added to catalog successfuly");
 }
 
+async function getPhotoCatalogs(token,req,res) {
+    let id_user = await auth.autenthicate(token);
+    if(id_user < 0)
+        return res.status(200).send("Invalid token");
+
+    const {id_photo} = req.query;
+     let result = await photosdao.getPhotoById(id_photo,id_user);
+    if(result.rowCount<=0)
+        return res.status(200).send("Photo not found");
+
+    let results = await catalogphotosdao.getPhotoCatalogs(id_photo);
+    if(results.rowCount<=0)
+        return res.status(200).send("Photo not in any catalogue");
+    return res.status(201).json(results.rows);
+}
+
 
 module.exports={
     getPhotosInCatalog,
+    getPhotoCatalogs,
     addPhotoToCatalog,
 
 }

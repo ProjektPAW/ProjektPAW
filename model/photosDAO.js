@@ -27,8 +27,8 @@ async function getUserPhotos(id_user) {
 }
 
 async function addPhoto(title,path,is_private,added,description,id_user) {
-    let result = await pool.query(
-        "insert into photos(title,path,is_private,added,description,id_user) values($1,$2,$3,$4,$5,$6);",
+    return await pool.query(
+        "insert into photos(title,path,is_private,added,description,id_user) values($1,$2,$3,$4,$5,$6) RETURNING id_photo",
         [title,path,is_private,added,description,id_user]
     );
 }
