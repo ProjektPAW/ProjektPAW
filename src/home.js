@@ -29,14 +29,17 @@ function Home() {
 
         {/* Carousel Section */}
         {photos.length > 0 && (
-          <div>
-            <h2>Wyróżnione Zdjęcia</h2>
+        <div>
+          {photos.length < 3 ? (
+            <></>
+          ) : (<h2>Wyróżnione Zdjęcia</h2>)&&(
             <Swiper
               modules={[Navigation, EffectCoverflow]}
               navigation
-              loop={true}
+              loop={photos.length > 3}
               centeredSlides={true}
               slidesPerView={2}
+              initialSlide={Math.floor(photos.length / 2)} // 👈 this is the key
               effect="coverflow"
               coverflowEffect={{
                 rotate: 0,
@@ -47,9 +50,9 @@ function Home() {
               }}
               className={styles.carousel}
             >
-              {photos.slice(0, 5).map((photo) => (
+              {photos.map((photo, index) => (
                 <SwiperSlide
-                  key={photo.id_photo}
+                  key={`${photo.id_photo}-${index}`}
                   style={{ width: '320px' }}
                   className="carousel-slide"
                 >
@@ -57,8 +60,10 @@ function Home() {
                 </SwiperSlide>
               ))}
             </Swiper>
-          </div>
-        )}
+          )}
+        </div>
+      )}
+
 
         {/* Grid Section */}
         <h2>Publiczne Zdjęcia</h2>
