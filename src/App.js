@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client"
 import {BrowserRouter, Routes, Route,Navigate } from "react-router-dom"
 import Home from './home'
+import EmailVerification from './EmailVerification'
 import Register from './register'
 import Profile from './profile'
 import { ToastContainer} from 'react-toastify';
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Home key={key} refr={refr}/>}/>
         <Route path="/register" element={<Register key={key}/>}/>
         <Route path="/profile"  element={isLoggedIn ? <Profile key={key} refr={refr} /> : <Navigate to="/" />} />
+        <Route path="/verify-email" element={<EmailVerification key={key} refr={refr} />} />
       </Routes>
       <Footer/>
     </BrowserRouter>

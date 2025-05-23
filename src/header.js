@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import profileImg from "./public/imgs/profile.png";
@@ -8,6 +8,7 @@ import styles from "./header.module.css";
 function Header({ refr }) {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [isLogged, setIsLogged] = useState(() => !!localStorage.getItem("jwtToken"));
+  const [verifiedEmail, setVerifiedEmail] = useState(localStorage.getItem("emailverified"));
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,6 +27,7 @@ function Header({ refr }) {
               localStorage.setItem("username", data.username);
               localStorage.setItem("email", data.email);
               localStorage.setItem("role", data.role);
+              localStorage.setItem("emailverified", data.emailverified);
               setIsLogged(true);
               setFormData({ username: "", password: "" });
               sendSuccess("Logged in successfully!");
@@ -51,6 +53,7 @@ function Header({ refr }) {
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("role");
+    localStorage.removeItem("emailverified");
     sendSuccess("Logout successful!");
     setIsLogged(false);
     refr();
@@ -88,6 +91,7 @@ function Header({ refr }) {
         </div>
       ) : (
         <div className={styles.user_info}>
+           {verifiedEmail=="false" &&( <div style={{color:'red'}}>Please verify your email!</div>)}
           <p>
             Hello, <strong>{localStorage.getItem("username")}</strong>!
           </p>
