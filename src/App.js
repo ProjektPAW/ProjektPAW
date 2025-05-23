@@ -20,7 +20,7 @@ function App() {
     <Header refr={refr}/>
     <ToastContainer className="toast-position"/>
       <Routes >
-        <Route path="/" element={<Home key={key}/>}/>
+        <Route path="/" element={<Home key={key} refr={refr}/>}/>
         <Route path="/register" element={<Register key={key}/>}/>
         <Route path="/profile"  element={isLoggedIn ? <Profile key={key} refr={refr} /> : <Navigate to="/" />} />
       </Routes>

@@ -114,9 +114,15 @@ function Profile({ refr }) {
             })
             .then((response) => {
                 let temp=[];
+                setCatalogList([]);
                 for(var i in response.data){
                    temp.push(response.data[i].id_catalog);
                 }
+                let catalogObj = {};
+                for (let i = 0; i < temp.length; i++)
+                    catalogObj[temp[i]] = true;
+                setCatalogList(catalogObj);
+                
                 setCheckedCatalogsList(temp);
                 setCatalogsLoaded(true);
             })
@@ -386,7 +392,7 @@ function Profile({ refr }) {
                     <h2>Profil</h2>
                     <p>Użytkownik: {userData.username}</p>
                     <p>Email: {userData.email}</p>
-                    <button className={styles.open_modal_btn} onClick={() => setShowModal(true)}>
+                    <button className={styles.open_modal_btn} onClick={() => {setCatalogList([]);setShowModal(true);}}>
                         Dodaj zdjęcie
                     </button>
                 </div>

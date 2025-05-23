@@ -25,6 +25,7 @@ function Header({ refr }) {
               localStorage.setItem("jwtToken", data.token);
               localStorage.setItem("username", data.username);
               localStorage.setItem("email", data.email);
+              localStorage.setItem("role", data.role);
               setIsLogged(true);
               setFormData({ username: "", password: "" });
               sendSuccess("Logged in successfully!");
@@ -49,6 +50,7 @@ function Header({ refr }) {
     localStorage.removeItem("jwtToken");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
+    localStorage.removeItem("role");
     sendSuccess("Logout successful!");
     setIsLogged(false);
     refr();

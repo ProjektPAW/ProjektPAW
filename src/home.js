@@ -7,9 +7,11 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, EffectCoverflow } from 'swiper/modules';
+import {sendError, sendSuccess, sendWarning} from './toast'
 import closeImg from "./public/imgs/close.png";
+import deleteImg from "./public/imgs/bin.png";
 
-function Home() {
+function Home({ refr }) {
   const [photos, setPhotos] = useState([]);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   useEffect(() => {
@@ -22,6 +24,36 @@ function Home() {
         console.error("Błąd podczas pobierania zdjęć:", error);
       });
   }, []);
+
+  const deletePhoto = async (id) => {
+    const confirmDelete = window.confirm("Na pewno chcesz usunąć to zdjęcie?");
+    if (!confirmDelete) return;
+    
+    try {
+        axios
+            .delete("/api/deletephoto", {
+                data: { id_photo: id },
+                headers: {
+                Authorization: localStorage.getItem("jwtToken"),
+                },
+            }) 
+            .then((response) => {
+                if (response.status == 200) {
+                    sendError(response.data || "deleting failed.");
+                    return;
+                }
+                sendSuccess("Photo deleted successfully!");
+                refr();
+            })
+            .catch((error) => {
+                console.error("Błąd:", error);
+                sendError("Photo deleting failed.");
+            });
+    } catch (error) {
+        sendError("Server error: " + error.message);
+    }
+
+};
 
   return (
     <div className={styles.page_container}>
@@ -77,8 +109,24 @@ function Home() {
                   className={`${photoStyles.clickable} ${photoStyles.photo}`}
 
               />
-            <h4>{photo.title.length > 30 ? photo.title.slice(0, 30) + '...' : photo.title}</h4>
+            <div className={styles.title_container}>
+              <div className={styles.padlock_container}>
+                <h4>{photo.title.length > 30 ? photo.title.slice(0, 30) + '...' : photo.title}</h4>
+              </div>
+              {localStorage.getItem("role")==1 && (
+              <div>
+                <button className ={styles.delete_btn} onClick={() => deletePhoto(photo.id_photo)}>
+                    <img src={deleteImg}
+                        alt = "Delete"
+                        className={styles.icon_delete}
+                    />
+                </button>
+              </div>)}
+            </div>
+
             <p>{photo.description.length > 30 ? photo.description.slice(0, 30) + '...' : photo.description}</p>
+
+
             </div>
           ))}
         </div>
