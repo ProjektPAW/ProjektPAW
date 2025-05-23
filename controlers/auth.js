@@ -2,6 +2,8 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const userdao = require("../model/userDAO");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 
 async function register(username,email,password,res){
@@ -14,13 +16,51 @@ async function register(username,email,password,res){
         if((await userdao.selectUserByUnameEmail(username,email)).rowCount>0)
             return res.status(200).json({message:"Username or email taken"});
 
+        const emailToken = crypto.randomBytes(32).toString("hex");
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await userdao.createUser(username,email,hashedPassword);
+
+        const result = await userdao.createUser(username,email,hashedPassword, emailToken);
+
+        const verificationLink = `${process.env.SERVER_ADDRESS}verify-email?token=${emailToken}`;
+
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.VERIFICATION_EMAIL,
+              pass: process.env.VERIFICATION_EMAIL_PASSWORD
+            }
+          });
+    
+          var mailOptions = {
+            from: process.env.VERIFICATION_EMAIL,
+            to: email,
+            subject: "Verify your email address",
+            html: `
+              <h3>Hello ${username},</h3>
+              <p>Please confirm your email by clicking the link below:</p>
+              <a href="${verificationLink}">${verificationLink}</a>
+            `
+          };
+        
+          transporter.sendMail(mailOptions, function(error, info){
+            if (error)
+              console.log(error);
+          });
+
         res.status(201).json({ message: "User registered successfully", user: result.rows[0] });
     } catch (err) {
         res.status(500).json({ message: "Server error: " + err.message });
     }
 };
+
+async function verifyEmail(emailToken,res){
+    const result = await userdao.verifyEmail(emailToken);
+    if(result.rowCount>0)
+        return res.status(201).send("email verification successful.");
+    else
+        return res.status(200).send("email verification failed.");
+}
 
 async function login(username,password,res) {
     try{
@@ -40,7 +80,7 @@ async function login(username,password,res) {
                     allowInsecureKeySizes:true,
                     expiresIn:3600
                 });
-            res.status(200).json({message:"Login successful.",token:token,username:user.username,email:user.email,role:user.id_role});
+            res.status(200).json({message:"Login successful.",token:token,username:user.username,email:user.email,role:user.id_role,emailverified:user.emailverified});
             return;
         }
         else{
@@ -102,5 +142,6 @@ module.exports={
     login,
     autenthicate,
     checkTokenExpired,
-    getUser
+    getUser,
+    verifyEmail
 }

@@ -8,11 +8,18 @@ const pool = new Pool({
     port: process.env.DB_PORT,
   });
 
-async function createUser(username, email, hashedPassword) {
+async function createUser(username, email, hashedPassword,emailToken) {
     return await pool.query(
-        "INSERT INTO users (username, email, password, id_role) VALUES ($1, $2, $3,0) RETURNING id_user, username, email",
-        [username, email, hashedPassword]
+        "INSERT INTO users (username, email, password, id_role, email_token) VALUES ($1, $2, $3,0, $4) RETURNING id_user, username, email",
+        [username, email, hashedPassword, emailToken]
     );
+}
+
+async function verifyEmail(emailToken){
+  return await pool.query(
+    "update users set emailverified=true where email_token=$1 RETURNING id_user",
+    [emailToken]
+  );
 }
 
 async function selectUserByUnameEmail(username,email) {
@@ -48,5 +55,6 @@ async function selectUserById(id) {
     selectUserByUnameEmail,
     selectUserByUsername,
     selectUserById,
-    selectUserRoleById
+    selectUserRoleById,
+    verifyEmail
   }

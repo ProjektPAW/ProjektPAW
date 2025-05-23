@@ -41,6 +41,10 @@ router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   auth.register(username, email, password,res);
 });
+router.post("/verify-email", async (req, res) => {
+  const { emailToken } = req.body;
+  auth.verifyEmail(emailToken,res);
+});
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
