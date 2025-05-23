@@ -53,6 +53,37 @@ async function register(username,email,password,res){
         res.status(500).json({ message: "Server error: " + err.message });
     }
 };
+async function deleteuser(token,res){
+    let id_user = await autenthicate(token);
+    if(id_user < 0)
+        return res.status(200).send("Invalid token");
+    try {
+        await userdao.deleteUser(id_user);
+        return res.status(200).send("User deleted successfully");
+    } catch (err) {
+        console.error("User deletion error:", err);
+        return res.status(500).send("Failed to delete user");
+    }
+}
+async function changepassword(token,req,res){
+    let id_user = await autenthicate(token);
+    if(id_user < 0)
+        return res.status(200).send("Invalid token");
+    const {currentPassword,newPassword} = req.body;
+
+    try {
+        const user = (await userdao.selectUserById(id_user)).rows[0];
+        const equal = await bcrypt.compare(currentPassword,user.password);
+        if(equal==false)
+            return res.status(200).send("Incorrect current password");
+        const hashedNew = await bcrypt.hash(newPassword, 10);
+        await userdao.updateUserPassword(id_user, hashedNew);
+        return res.status(201).send("Password updated successfully");
+    }catch (err) {
+        console.error(err);
+        return res.status(500).send("Server error");
+      }
+}
 
 async function verifyEmail(emailToken,res){
     const result = await userdao.verifyEmail(emailToken);
@@ -143,5 +174,7 @@ module.exports={
     autenthicate,
     checkTokenExpired,
     getUser,
-    verifyEmail
+    verifyEmail,
+    deleteuser,
+    changepassword
 }

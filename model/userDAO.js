@@ -48,6 +48,19 @@ async function selectUserById(id) {
       [id]
   );
 }
+async function deleteUser(id) {
+  return await pool.query(
+      "delete from users where id_user = $1",
+      [id]
+  );
+}
+
+async function updateUserPassword(id_user, hashedNew) {
+  return await pool.query(
+      "UPDATE users SET password = $2 WHERE id_user = $1",
+      [id_user,hashedNew]
+  );
+}
 
   module.exports={
     pool,
@@ -56,5 +69,7 @@ async function selectUserById(id) {
     selectUserByUsername,
     selectUserById,
     selectUserRoleById,
-    verifyEmail
+    verifyEmail,
+    deleteUser,
+    updateUserPassword
   }

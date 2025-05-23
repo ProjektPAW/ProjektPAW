@@ -41,6 +41,17 @@ router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   auth.register(username, email, password,res);
 });
+
+router.delete("/deleteuser", async (req, res) => {
+  const token=req.headers.authorization;
+  auth.deleteuser(token,res);
+});
+
+router.patch("/changepassword", async (req, res) => {
+  const token=req.headers.authorization;
+  auth.changepassword(token,req,res);
+});
+
 router.post("/verify-email", async (req, res) => {
   const { emailToken } = req.body;
   auth.verifyEmail(emailToken,res);
@@ -81,10 +92,6 @@ router.patch("/editphoto", async (req, res) => {
 });
 
 router.delete("/deletephoto", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.deletePhoto(token,req,res);
-});
-router.delete("/deletephotobyadmin", async (req, res) => {
   const token=req.headers.authorization;
   photos.deletePhoto(token,req,res);
 });
