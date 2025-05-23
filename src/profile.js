@@ -1,5 +1,7 @@
+import passwordInputStyles from "./register.module.css"
 import styles from "./profile.module.css";
 import photoStyles from './photoGalery.module.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import React, { useEffect, useState } from "react";
 import {sendError, sendSuccess, sendWarning} from './toast'
 import axios from "axios";
@@ -7,8 +9,10 @@ import privateImg from "./public/imgs/private.png";
 import closeImg from "./public/imgs/close.png";
 import editImg from "./public/imgs/edit.png";
 import deleteImg from "./public/imgs/bin.png";
+import { useNavigate } from "react-router-dom";
 
 function Profile({ refr }) {
+    const navigate = useNavigate();
     const [userData, setUserData] = useState({
         username: "",
         email: "",
@@ -41,6 +45,21 @@ function Profile({ refr }) {
     const [showEditCatalogModal, setShowEditCatalogModal] = useState(false);
     const [selectedCatalogId, setSelectedCatalogId] = useState(-1);
     const [newCatalogName, setNewCatalogName] = useState("");
+                                    
+    const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+    const [changePasswordFromData, setChangePasswordFromData] = useState({
+        oldPassword: "",
+        newPassword: "",
+        confirmedNewPassword: ""
+    })
+
+    const [type, setType] = useState('password');
+    const [icon, setIcon] = useState(FaEyeSlash);
+
+    const [sortedPhotos, setSortedPhotos] = useState([]);
+    const [sortOrder, setSortOrder]=useState("added_desc");
+    const [page, setPage]=useState(0);
+    const [searchText, setSearchText]=useState("");
     useEffect(() => {
         axios
         .get("/api/getusercatalogs", {
@@ -71,21 +90,6 @@ function Profile({ refr }) {
                 console.error("Błąd pobierania użytkownika:", error);
             });
     }, []);
-
-    useEffect(() => {
-        axios
-            .get("/api/getuserphotos", {
-                headers: {
-                Authorization: localStorage.getItem("jwtToken"),
-                },
-            })
-            .then(response => {
-                setPhotos(response.data);
-            })
-            .catch(error => {
-                console.error("Błąd podczas pobierania zdjęć:", error);
-            });
-      }, []);
 
     const handleChange = (e) => {
         if(e.target.name==="photo")
@@ -213,59 +217,27 @@ function Profile({ refr }) {
 
     const [newCatalog, setNewCatalog] = useState({name: ''});
       
-      // Handle changes to the catalog form (name and description)
-      const handleCatalogChange = (e) => {
+    const handleCatalogChange = (e) => {
         const { name, value } = e.target;
         setNewCatalog((prevState) => ({
-          ...prevState,
-          [name]: value
+            ...prevState,
+            [name]: value
         }));
-      };
+    };
 
-      const handleSetCatalogs = (e)=>{
-        const { name, checked } = e.target;
-        setCatalogList((prevState) => ({
-          ...prevState,
-          [name]: checked
-        }));
-      }
+    const handleSetCatalogs = (e)=>{
+    const { name, checked } = e.target;
+    setCatalogList((prevState) => ({
+        ...prevState,
+        [name]: checked
+    }));
+    }
 
-      const getCatalogPhotos = (e) => {
-        let id=e.target.value;
-        setSelectedCatalogId(id);
+    const getCatalogPhotos = (e) => {
+        setSelectedCatalogId(e.target.value);
+    };
 
-        if(id>-1){
-            axios
-                .get("/api/getphotosincatalog", {
-                    params: { id_catalog: id},
-                    headers: {
-                    Authorization: localStorage.getItem("jwtToken"),
-                    },
-                })
-                .then((response) => {
-                    setPhotos(response.data);
-                })
-                .catch((error) => {
-                    console.error("Błąd podczas pobierania zdjęć:", error);
-                });
-        }
-        else{
-            axios
-                .get("/api/getuserphotos", {
-                    headers: {
-                    Authorization: localStorage.getItem("jwtToken"),
-                    },
-                })
-                .then(response => {
-                    setPhotos(response.data);
-                })
-                .catch(error => {
-                    console.error("Błąd podczas pobierania zdjęć:", error);
-                });
-        }
-      };
-
-      const deletePhoto = async (id) => {
+    const deletePhoto = async (id) => {
         const confirmDelete = window.confirm("Na pewno chcesz usunąć to zdjęcie?");
         if (!confirmDelete) return;
         
@@ -292,7 +264,6 @@ function Profile({ refr }) {
         } catch (error) {
             sendError("Server error: " + error.message);
         }
-
     };
 
     const CreateCatalogue = async (e) => {
@@ -325,7 +296,6 @@ function Profile({ refr }) {
             sendError("Server error: " + error.message);
         }
     };
-
 
     const handleEditCatalogSubmit = async (e) => {
         e.preventDefault();
@@ -384,7 +354,142 @@ function Profile({ refr }) {
             console.error("Błąd usuwania:", error);
             sendError("Usunięcie katalogu nie powiodło się.");
         }
+
     };
+    const handleDeleteUser = (e) =>{
+        const confirmDelete = window.confirm("Na pewno chcesz usunąć konto?");
+        if (!confirmDelete) return;
+
+                try {
+            axios
+                .delete("/api/deleteuser", {
+                    headers: {
+                    Authorization: localStorage.getItem("jwtToken"),
+                    },
+                }) 
+                .then((response) => {
+                    if (response.status == 200) {
+                        sendError(response.data || "deleting failed.");
+                        return;
+                    }
+                    sendSuccess("User deleted successfully!");
+                    localStorage.removeItem("jwtToken");
+                    localStorage.removeItem("username");
+                    localStorage.removeItem("email");
+                    localStorage.removeItem("role");
+                    localStorage.removeItem("emailverified");
+                    setTimeout(() => window.location.href="/", 2000);
+                })
+                .catch((error) => {
+                    console.error("Błąd:", error);
+                    sendError("User deleting failed.");
+                });
+        } catch (error) {
+            sendError("Server error: " + error.message);
+        }
+    };
+    const handleChangePassword = (e) =>{
+        setChangePasswordFromData({ ...changePasswordFromData, [e.target.name]: e.target.value });
+    }
+    const handleSubmitChangePassword = (e) => {
+        e.preventDefault();
+        if(changePasswordFromData.newPassword!=changePasswordFromData.confirmedNewPassword){
+            sendError("Passowrds must match!");
+            return;
+        }
+        try {
+            axios
+            .patch("/api/changepassword",{currentPassword:changePasswordFromData.oldPassword,newPassword:changePasswordFromData.newPassword}, {
+                headers: {
+                Authorization: localStorage.getItem("jwtToken"),
+                },
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    sendError("Current password incorrect!");
+                    return;
+                }
+                else if(response.status === 201){
+                    sendSuccess("Password changed successfully!");
+                    setShowChangePasswordModal(false);
+                    refr();
+                }else 
+                    sendError("Password change failed.");
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                sendError("Password change failed.");
+            });
+        } catch (error) {
+            sendError("Server error: " + error.message);
+        }
+    };
+    const handleToggle = () => {
+        if (type === 'password') {
+            setIcon(FaEye);
+            setType('text');  
+        } else {
+            setIcon(FaEyeSlash);
+            setType('password'); 
+        }
+    };
+    const handleSort = (e) => {
+        setSortOrder(e.target.value);
+    };
+
+    const handleSearch = (e) => {
+        setSearchText(e.target.value);
+    };
+
+    const fetchPhotos = (sort, search) => {
+        try {
+        axios
+            .get("/api/paged/getuserphotos", {
+            params: {page:page,sort:sortOrder,search:searchText},
+            headers: {
+                Authorization: localStorage.getItem("jwtToken"),
+            },
+            })
+            .then((response) => {
+            setSortedPhotos(response.data);
+            })
+            .catch((error) => {
+            console.error("Błąd podczas pobierania zdjęć:", error);
+            });
+        } catch (error) {
+        sendError("Server error: " + error.message);
+        }
+    };
+
+    const fetchPhotosFromCatalog = (sort, search, id_catalog) => {
+        try {
+        axios
+            .get("/api/paged/getphotosincatalog", {
+            params: {page:page,sort:sortOrder,search:searchText,id_catalog:selectedCatalogId},
+            headers: {
+                Authorization: localStorage.getItem("jwtToken"),
+            },
+            })
+            .then((response) => {
+            setSortedPhotos(response.data);
+            })
+            .catch((error) => {
+            console.error("Błąd podczas pobierania zdjęć:", error);
+            });
+        } catch (error) {
+        sendError("Server error: " + error.message);
+        }
+    };
+
+    useEffect(() => {
+        setPage(0);
+        if(selectedCatalogId>=0){
+            fetchPhotosFromCatalog(sortOrder, searchText, selectedCatalogId);
+        }
+        else{
+            fetchPhotos(sortOrder, searchText);
+        } 
+    }, [sortOrder,searchText,selectedCatalogId]);
     return (
         <div className={styles.page_container}>
             <main className={styles.content}>
@@ -392,9 +497,17 @@ function Profile({ refr }) {
                     <h2>Profil</h2>
                     <p>Użytkownik: {userData.username}</p>
                     <p>Email: {userData.email}</p>
-                    <button className={styles.open_modal_btn} onClick={() => {setCatalogList([]);setShowModal(true);}}>
-                        Dodaj zdjęcie
-                    </button>
+                    <div className={styles.button_group}>
+                        <button className={styles.open_modal_btn} onClick={() => {setCatalogList([]);setShowModal(true);}}>
+                            Dodaj zdjęcie
+                        </button>
+                        <button className={styles.open_modal_btn} onClick={() => setShowChangePasswordModal(true)}>
+                            Zmień hasło
+                        </button>
+                        <button className={styles.delete_account_btn} onClick={handleDeleteUser}>
+                            Usuń konto
+                        </button>
+                    </div>
                 </div>
                 {showModal && (
                     <div className={styles.modal_overlay} onClick={() => setShowModal(false)}>
@@ -429,12 +542,20 @@ function Profile({ refr }) {
                     <div className={styles.catalog_container}>
                         <h2>Moje Zdjęcia</h2>
                         <div className={styles.catalog_group}>
+                            <select onChange={handleSort} className={styles.sort_dropdown}>
+                                <option value="title_asc">Nazwa: A - Z</option>
+                                <option value="title_desc">Nazwa: Z - A</option>
+                                <option value="added_desc">Data dodania: od najnowszych</option>
+                                <option value="added_asc">Data dodania: od najstarszych</option>
+                            </select>
+                            <input placeholder='Szukaj...' onChange={handleSearch} className={styles.search_input}></input>
                             <select onChange={getCatalogPhotos} className={styles.catalog_dropdown}>
                             {catalogs.map((catalog) => (
                                 <option key={catalog.id_catalog} name={catalog.name} value={catalog.id_catalog}>
                                     {catalog.name}
                                 </option>
                             ))}
+                            
                             </select>
                             <button className={styles.add_catalog_btn} onClick={() => setShowCatalogModal(true)}>
                                 Dodaj katalog
@@ -449,9 +570,13 @@ function Profile({ refr }) {
 
                     </div>
                 </div>
-                
+
                 <div className={photoStyles.photo_grid}>
-                {!Array.isArray(photos)||photos.length===0? <div className={styles.catalog_empty}> <p>Katalog pusty</p> </div> :( photos.map((photo) => (
+                {!Array.isArray(sortedPhotos)||sortedPhotos.length===0? (
+                    <div className={styles.catalog_empty}> 
+                        {searchText!=""?(<p>Brak zdjęć spełniających kryteria wyszukiwania.</p>):(<p> Katalog pusty</p>)}
+                    </div> 
+                    ):( sortedPhotos.map((photo) => (
                     <div key={photo.id_photo} className={photoStyles.photo_card}>
                     <img
                         src={`/api/${photo.path}`}
@@ -583,6 +708,60 @@ function Profile({ refr }) {
                     </form>
                     </div>
                 </div>
+                )}
+                {showChangePasswordModal &&(
+                    <div className={photoStyles.modal_overlay} onClick={() => setShowChangePasswordModal(false)}>
+                        <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+                            <span className={photoStyles.close_modal} onClick={() => setShowChangePasswordModal(false)}>
+                                <img src={closeImg} alt="Close" className={photoStyles.icon_close} />
+                            </span>
+                            <h3>Zmiana Hasła</h3>
+                            <div className={styles.change_password_form}>
+                            <form onSubmit={handleSubmitChangePassword} className={styles.photo_form}>
+                                <label>Podaj obecne hasło:</label>
+                                <div className={styles.password_container}>
+                                    <input
+                                        name="oldPassword"
+                                        type={type}
+                                        placeholder="Podaj obecne hasło..."
+                                        onChange={handleChangePassword}
+                                        required
+                                    />
+                                    <span className={passwordInputStyles.password_icon} onClick={handleToggle}>
+                                        {icon}
+                                    </span>
+                                </div>
+                                <label>Podaj nowe hasło:</label>
+                                <div className={styles.password_container}>
+                                    <input
+                                    name="newPassword"
+                                    type={type}
+                                    placeholder="Podaj nowe hasło..."
+                                    onChange={handleChangePassword}
+                                    required
+                                    />
+                                    <span className={passwordInputStyles.password_icon} onClick={handleToggle}>
+                                        {icon}
+                                    </span>
+                                </div>
+                                <label>Potwierdź nowe hasło:</label>
+                                <div className={styles.password_container}>
+                                    <input
+                                        name="confirmedNewPassword"
+                                        type={type}
+                                        placeholder="Potwierdź nowe hasło..."
+                                        onChange={handleChangePassword}
+                                        required
+                                    />
+                                    <span className={passwordInputStyles.password_icon} onClick={handleToggle}>
+                                        {icon}
+                                    </span>
+                                </div>
+                                <button type="submit" className={styles.change_password_btn}>Zapisz zmiany</button>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </main>
         </div>

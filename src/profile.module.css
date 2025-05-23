@@ -274,3 +274,72 @@
     width: 123px;
     opacity: 0;
 }
+.button_group{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.button_group button{
+    margin-top: 5px;
+}
+.delete_account_btn{
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #ff0000;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.delete_account_btn:hover{
+    background-color: #8b0000;
+}
+.change_password_btn{
+    width:100%;
+    background: #28a745;
+    display: flex;
+    justify-content: center;
+    user-select: none;
+}
+.change_password_btn:hover{
+    background: #218838;
+    user-select: none;
+}
+.change_password_form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width:500px;
+  user-select: none;
+}
+.password_container{
+    position:relative;
+    width:100%;
+}
+
+.change_password_form input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+.sort_dropdown{
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background-color: white;
+  transition: border 0.3s ease;
+}
+.search_input{
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: white;
+}

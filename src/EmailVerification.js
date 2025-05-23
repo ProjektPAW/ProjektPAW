@@ -21,11 +21,11 @@ function EmailVerification() {
           sendSuccess("Email verified successfully!");
           localStorage.setItem("emailverified","true");
         }
-        navigate("/");
+        setTimeout(() => window.location.href="/", 2000);
       })
       .catch(() => {
         sendError("Email verification failed.");
-        navigate("/");
+        setTimeout(() => window.location.href="/", 2000);
       });
   }, []);
   return (

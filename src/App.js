@@ -9,6 +9,7 @@ import Profile from './profile'
 import { ToastContainer} from 'react-toastify';
 import Header from "./header";
 import Footer from "./footer";
+import axios from 'axios';
 
 function App() {
   const [key, setKey] = useState(0);
@@ -16,6 +17,35 @@ function App() {
 
   const isLoggedIn = localStorage.getItem("jwtToken") !== null;
 
+  function refreshToken() {
+      try{
+        axios
+        .post("/api/refreshtoken",{},{
+            headers: {
+              Authorization: localStorage.getItem("jwtToken"),
+            },
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                localStorage.setItem("jwtToken",-1);
+                setTimeout(() => window.location.href="/", 2000);
+                return;
+            }
+            else if(response.status === 201){
+              localStorage.setItem("jwtToken",response.data.token);
+            }
+      })
+        .catch((error) => {
+            console.error("Błąd:", error);
+        });
+    } catch (error) {
+        console.error("Server error: " + error.message);
+    }
+  };
+  useEffect(()=>{
+    if(isLoggedIn)
+      setInterval(refreshToken, 900000);
+  },[isLoggedIn]);
   return (
     <BrowserRouter>
     <Header refr={refr}/>

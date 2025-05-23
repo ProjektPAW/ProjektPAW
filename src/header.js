@@ -91,10 +91,20 @@ function Header({ refr }) {
         </div>
       ) : (
         <div className={styles.user_info}>
-           {verifiedEmail=="false" &&( <div style={{color:'red'}}>Please verify your email!</div>)}
-          <p>
-            Hello, <strong>{localStorage.getItem("username")}</strong>!
-          </p>
+           {verifiedEmail=="false" ?(
+              <div className={styles.verify_email_container}>
+                <p>
+                  Hello, <strong>{localStorage.getItem("username")}</strong>!
+                </p>
+                <div style={{ color: '#d32f2f', fontWeight: 'bold' , paddingTop: 4 + 'px'}}>Please verify your email!</div>
+              </div>
+             ):(
+              <p>
+                Hello, <strong>{localStorage.getItem("username")}</strong>!
+              </p>
+             )
+            }
+
           <Link to="/profile">
             <button className={`${styles.header_btn} ${styles.profile_btn}`}>
               <img src={profileImg} alt="Profile" />

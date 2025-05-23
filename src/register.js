@@ -1,5 +1,5 @@
 import styles from "./register.module.css";
-import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Import icons from react-icons
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {sendError, sendSuccess, sendWarning} from './toast'
@@ -7,7 +7,7 @@ import axios from "axios";
 
 function Register() {
     const [type, setType] = useState('password');
-    const [icon, setIcon] = useState(FaEyeSlash);  // Default to eye-off (hidden)
+    const [icon, setIcon] = useState(FaEyeSlash); 
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -18,11 +18,11 @@ function Register() {
 
     const handleToggle = () => {
         if (type === 'password') {
-            setIcon(FaEye);  // Show the eye icon when the password is hidden
-            setType('text');  // Change input type to text
+            setIcon(FaEye);
+            setType('text'); 
         } else {
-            setIcon(FaEyeSlash);  // Hide the eye icon when the password is visible
-            setType('password');  // Change input type to password
+            setIcon(FaEyeSlash);
+            setType('password');
         }
     };
     const handleChange = (e) => {
