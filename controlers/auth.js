@@ -161,6 +161,21 @@ async function checkTokenExpired(token,res) {
     }
 }
 
+async function refreshToken(token,res) {
+    let id_user = await autenthicate(token);
+    if(id_user < 0)
+        return res.status(200).json({message:"Invalid token",token:"-1"});
+    const newToken = jwt.sign(
+                {id:id_user},
+                process.env.JWT_SECRET,
+                {
+                    algorithm:"HS256",
+                    allowInsecureKeySizes:true,
+                    expiresIn:3600
+                });
+    return res.status(201).json({message:"Token refreshed",token:newToken});
+}
+
 async function getUser(token,res) {    
   let id_user = await autenthicate(token);
   if(id_user<0) return res.status(200).send("Invalid token");
@@ -173,6 +188,7 @@ module.exports={
     login,
     autenthicate,
     checkTokenExpired,
+    refreshToken,
     getUser,
     verifyEmail,
     deleteuser,

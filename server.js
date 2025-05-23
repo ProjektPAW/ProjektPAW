@@ -67,6 +67,11 @@ router.post("/checktoken", async (req, res) => {
   auth.checkTokenExpired(token,res);
 });
 
+router.post("/refreshtoken", async (req, res) => {
+  const token = req.headers.authorization;
+  auth.refreshToken(token,res);
+});
+
 router.get("/getuser", async (req, res) => {
   const token=req.headers.authorization;
   auth.getUser(token,res);
