@@ -59,7 +59,7 @@ async function deleteuser(token,res){
         return res.status(200).send("Invalid token");
     try {
         await userdao.deleteUser(id_user);
-        return res.status(200).send("User deleted successfully");
+        return res.status(201).send("User deleted successfully");
     } catch (err) {
         console.error("User deletion error:", err);
         return res.status(500).send("Failed to delete user");
