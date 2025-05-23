@@ -20,10 +20,9 @@ async function filterGetAllPublicPhotos(sort,search,limit,offset) {
     return await pool.query(
         `select p.id_photo, p.title, p.path, p.added, p.description, u.username
         from photos p inner join users u on p.id_user=u.id_user
-        where p.is_private=false and p.title like $2
-        order by $1
-        limit $3 offset $4;`
-    ,[sort,search,limit,offset]);
+        where p.is_private=false and p.title like $1
+        order by `+sort+` limit $2 offset $3`
+    ,[search,limit,offset]);
 }
 
 async function getUserPhotos(id_user) {
@@ -40,10 +39,9 @@ async function filterGetUserPhotos(id_user,sort,search,limit,offset) {
     return await pool.query(
         `SELECT p.id_photo, p.title, p.path, p.added, p.description, p.is_private, u.username
          FROM photos p INNER JOIN users u ON p.id_user = u.id_user
-         WHERE p.id_user = $1 and p.title like $3
-         ORDER BY $2
-         limit $4 offset $5;`,
-        [id_user,sort,search,limit,offset]
+         WHERE p.id_user = $1 and p.title like $2
+         order by `+sort+` limit $3 offset $4`,
+        [id_user,search,limit,offset]
     );
 }
 
