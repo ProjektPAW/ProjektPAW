@@ -80,6 +80,10 @@ router.delete("/deletephoto", async (req, res) => {
   const token=req.headers.authorization;
   photos.deletePhoto(token,req,res);
 });
+router.delete("/deletephotobyadmin", async (req, res) => {
+  const token=req.headers.authorization;
+  photos.deletePhoto(token,req,res);
+});
 
 // CATALOGS
 router.get("/getusercatalogs", async (req, res) => {

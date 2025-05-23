@@ -39,6 +39,12 @@ async function getPhotoById(id_photo, id_user) {
         [id_photo,id_user]
     );
 }
+async function adminGetPhotoById(id_photo) {
+    return await pool.query(
+        "SELECT * FROM photos WHERE id_photo = $1",
+        [id_photo]
+    );
+}
 
 async function editPhoto(title,is_private,description,id_photo,path) {
     let result = await pool.query(
@@ -54,6 +60,12 @@ async function deletePhoto(id_photo,id_user) {
         [id_photo,id_user]
     );
 }
+async function adminDeletePhoto(id_photo) {
+    let result = await pool.query(
+        "delete from photos where id_photo=$1",
+        [id_photo]
+    );
+}
 
 module.exports={
     getAllPublicPhotos,
@@ -62,6 +74,8 @@ module.exports={
     getPhotoById,
     editPhoto,
     deletePhoto,
+    adminGetPhotoById,
+    adminDeletePhoto
 }
 
 

@@ -10,7 +10,7 @@ const pool = new Pool({
 
 async function createUser(username, email, hashedPassword) {
     return await pool.query(
-        "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id_user, username, email",
+        "INSERT INTO users (username, email, password, id_role) VALUES ($1, $2, $3,0) RETURNING id_user, username, email",
         [username, email, hashedPassword]
     );
 }
@@ -28,6 +28,12 @@ async function selectUserByUsername(username) {
       [username]
   );
 }
+async function selectUserRoleById(id) {
+  return await pool.query(
+      "select id_role from users where id_user = $1",
+      [id]
+  );
+}
 
 async function selectUserById(id) {
   return await pool.query(
@@ -42,4 +48,5 @@ async function selectUserById(id) {
     selectUserByUnameEmail,
     selectUserByUsername,
     selectUserById,
+    selectUserRoleById
   }

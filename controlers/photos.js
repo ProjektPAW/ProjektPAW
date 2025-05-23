@@ -1,6 +1,7 @@
 const photodao = require("../model/photosDAO");
 const catalogsdao = require("../model/catalogsDAO");
 const catalogPhotoDAO = require("../model/catalogPhotoDAO");
+const userdao = require("../model/userDAO");
 const auth = require("./auth");
 const fs = require("fs");
 
@@ -93,7 +94,13 @@ async function deletePhoto(token, req, res){
     if(id_user < 0)
         return res.status(200).send("Invalid token");
     const {id_photo} = req.body;
-    let result = await photodao.getPhotoById(id_photo,id_user);
+    let user_role=(await userdao.selectUserRoleById(id_user)).rows[0].id_role;
+    
+    let result;
+    if(user_role==1)
+        result = await photodao.adminGetPhotoById(id_photo);
+    else 
+        result = await photodao.getPhotoById(id_photo,id_user);
     if(result.rowCount<=0)
         return res.status(200).send("Photo not found");
     if(fs.unlink(result.rows[0].path, function (err) {
@@ -102,7 +109,10 @@ async function deletePhoto(token, req, res){
     }))
         return res.status(500).send("File deletion failed.");
     else{
-        let resultDel = await photodao.deletePhoto(id_photo,id_user);
+        if(user_role==1)
+            await photodao.adminDeletePhoto(id_photo);
+        else
+            await photodao.deletePhoto(id_photo,id_user);
         return res.status(201).send("Deletion successful");
     }
 }
@@ -112,5 +122,5 @@ module.exports={
     getUserPhotos,
     addPhoto,
     editPhoto,
-    deletePhoto,
+    deletePhoto
 }

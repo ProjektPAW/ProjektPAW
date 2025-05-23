@@ -40,7 +40,7 @@ async function login(username,password,res) {
                     allowInsecureKeySizes:true,
                     expiresIn:3600
                 });
-            res.status(200).json({message:"Login successful.",token:token,username:user.username,email:user.email});
+            res.status(200).json({message:"Login successful.",token:token,username:user.username,email:user.email,role:user.id_role});
             return;
         }
         else{
