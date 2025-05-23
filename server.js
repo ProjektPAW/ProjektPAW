@@ -65,9 +65,18 @@ router.get("/getphotos", async (req, res) => {
   photos.getAllPublicPhotos(res);
 });
 
+router.get("/paged/getphotos", async (req, res) => {
+  photos.filterGetAllPublicPhotos(req, res);
+});
+
 router.get("/getuserphotos", async (req, res) => {
   const token=req.headers.authorization;
   photos.getUserPhotos(token, res);
+});
+
+router.get("/paged/getuserphotos", async (req, res) => {
+  const token=req.headers.authorization;
+  photos.filterGetUserPhotos(token, req, res);
 });
 
 router.post("/addphoto", async (req, res) => {
@@ -119,6 +128,11 @@ router.delete("/deletecatalog", async (req, res) => {
 router.get("/getphotosincatalog", async (req, res) => {
   const token=req.headers.authorization;
   catalogphoto.getPhotosInCatalog(token,req,res);
+});
+
+router.get("/paged/getphotosincatalog", async (req, res) => {
+  const token=req.headers.authorization;
+  catalogphoto.filterGetPhotosInCatalog(token,req,res);
 });
 
 router.post("/addphototocatalog", async (req, res) => {

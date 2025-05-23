@@ -2,6 +2,7 @@ const catalogphotosdao = require("../model/catalogPhotoDAO");
 const catalogsdao = require("../model/catalogsDAO");
 const photosdao = require("../model/photosDAO");
 const auth = require("./auth");
+const numPerPage=20;
 
 async function getPhotosInCatalog(token,req,res) {
     let id_user = await auth.autenthicate(token);
@@ -12,6 +13,27 @@ async function getPhotosInCatalog(token,req,res) {
     if(result.rowCount<=0)
         return res.status(200).send("Photos in catalog not found");
     return res.status(201).json(result.rows);
+}
+
+async function filterGetPhotosInCatalog(token,req,res) {
+    let id_user = await auth.autenthicate(token);
+    if(id_user < 0)
+        return res.status(200).send("Invalid token");
+    const {id_catalog, sort, search, page} = req.query;
+    let offset=page*numPerPage;
+    let newSort = sort||"added desc";
+    newSort=newSort.replace("_"," ").toString();
+    let newSearch=search||"";
+    newSearch="%"+search+"%";
+    try{
+        let result = await catalogphotosdao.filterGetPhotosInCatalog(id_catalog,id_user,newSort,newSearch,numPerPage,offset);
+        if(result.rowCount<=0)
+            return res.status(200).send("Photos in catalog not found");
+        return res.status(201).json(result.rows);
+    }catch(e){
+        console.log(e);
+        return res.status(201).json({message:"Photo get failed"});
+    }
 }
 
 async function addPhotoToCatalog(token,req,res) {
@@ -51,6 +73,7 @@ async function getPhotoCatalogs(token,req,res) {
 
 module.exports={
     getPhotosInCatalog,
+    filterGetPhotosInCatalog,
     getPhotoCatalogs,
     addPhotoToCatalog,
 
