@@ -4,10 +4,29 @@ const catalogPhotoDAO = require("../model/catalogPhotoDAO");
 const userdao = require("../model/userDAO");
 const auth = require("./auth");
 const fs = require("fs");
+const numPerPage=20;
 
 async function getAllPublicPhotos(res) {
     let result = await photodao.getAllPublicPhotos();
     return res.status(200).json(result.rows);
+}
+
+async function filterGetAllPublicPhotos(req, res) {
+    const {sort, search, page} = req.query;
+    let offset=page*numPerPage;
+    let newSort = sort||"added desc";
+    newSort=newSort.replace("_"," ").toString();
+    let newSearch=search||"";
+    newSearch="%"+search+"%";
+    try{
+        let result = await photodao.filterGetAllPublicPhotos(newSort,newSearch,numPerPage,offset);
+        if(result.rowCount<=0)
+            return res.status(200).send("Photos not found");
+        return res.status(201).json(result.rows);
+    }catch(e){
+        console.log(e);
+        return res.status(201).json({message:"Photo get failed"});
+    }
 }
 
 async function addPhoto(token,req,res) {
@@ -53,6 +72,28 @@ async function getUserPhotos(token, res){
     let result = await photodao.getUserPhotos(id_user);
     return res.status(201).json(result.rows);
 }
+
+async function filterGetUserPhotos(token,req, res){
+    let id_user = await auth.autenthicate(token);
+    if(id_user < 0)
+        return res.status(200).send("Invalid token");
+    const {sort, search, page} = req.query;
+    let offset=page*numPerPage;
+    let newSort = sort||"added desc";
+    newSort=newSort.replace("_"," ").toString();
+    let newSearch=search||"";
+    newSearch="%"+search+"%";
+    try{
+        let result = await photodao.filterGetUserPhotos(id_user,newSort,newSearch,numPerPage,offset);
+        if(result.rowCount<=0)
+            return res.status(200).send("Photos not found");
+        return res.status(201).json(result.rows);
+    }catch(e){
+        console.log(e);
+        return res.status(201).json({message:"Photo get failed"});
+    }
+}
+
 async function editPhoto(token, req, res){
     let id_user = await auth.autenthicate(token);
     if(id_user < 0)
@@ -119,7 +160,9 @@ async function deletePhoto(token, req, res){
 
 module.exports={
     getAllPublicPhotos,
+    filterGetAllPublicPhotos,
     getUserPhotos,
+    filterGetUserPhotos,
     addPhoto,
     editPhoto,
     deletePhoto
