@@ -8,11 +8,12 @@ const pool = new Pool({
     port: process.env.DB_PORT,
   });
 
-async function getAllPublicPhotos() {
+async function getCarouselPhotos() {
     return await pool.query(
         "select p.id_photo, p.title, p.path, p.added, p.description, u.username \
         from photos p inner join users u on p.id_user=u.id_user \
-        where p.is_private=false order by p.added desc"
+        where p.is_private=false order by p.added desc\
+        limit 5"
     );
 }
 
@@ -87,7 +88,7 @@ async function adminDeletePhoto(id_photo) {
 }
 
 module.exports={
-    getAllPublicPhotos,
+    getCarouselPhotos,
     filterGetAllPublicPhotos,
     getUserPhotos,
     filterGetUserPhotos,

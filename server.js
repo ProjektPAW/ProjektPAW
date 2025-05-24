@@ -77,8 +77,8 @@ router.get("/getuser", async (req, res) => {
   auth.getUser(token,res);
 });
 
-router.get("/getphotos", async (req, res) => {
-  photos.getAllPublicPhotos(res);
+router.get("/getcarouselphotos", async (req, res) => {
+  photos.getCarouselPhotos(res);
 });
 
 router.get("/paged/getphotos", async (req, res) => {

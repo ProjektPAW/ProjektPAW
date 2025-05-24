@@ -6,8 +6,8 @@ const auth = require("./auth");
 const fs = require("fs");
 const numPerPage=20;
 
-async function getAllPublicPhotos(res) {
-    let result = await photodao.getAllPublicPhotos();
+async function getCarouselPhotos(res) {
+    let result = await photodao.getCarouselPhotos();
     return res.status(200).json(result.rows);
 }
 
@@ -159,7 +159,7 @@ async function deletePhoto(token, req, res){
 }
 
 module.exports={
-    getAllPublicPhotos,
+    getCarouselPhotos,
     filterGetAllPublicPhotos,
     getUserPhotos,
     filterGetUserPhotos,
