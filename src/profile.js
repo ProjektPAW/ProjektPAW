@@ -2,7 +2,7 @@ import passwordInputStyles from "./register.module.css"
 import styles from "./profile.module.css";
 import photoStyles from './photoGalery.module.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import React, { useEffect, useState } from "react";
+import React, {useRef, useEffect, useState } from "react";
 import {sendError, sendSuccess, sendWarning} from './toast'
 import axios from "axios";
 import privateImg from "./public/imgs/private.png";
@@ -60,6 +60,18 @@ function Profile({ refr }) {
     const [sortOrder, setSortOrder]=useState("added_desc");
     const [page, setPage]=useState(0);
     const [searchText, setSearchText]=useState("");
+
+    const [loading, setLoading] = useState(false);
+    const [fetchNoMore, setFetchNoMore] = useState(false);
+    const debounceTimeoutRef = useRef(null);
+
+    useEffect(() => {
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
+    }, []);
     useEffect(() => {
         axios
         .get("/api/getusercatalogs", {
@@ -235,6 +247,7 @@ function Profile({ refr }) {
 
     const getCatalogPhotos = (e) => {
         setSelectedCatalogId(e.target.value);
+        setPage(0);
     };
 
     const deletePhoto = async (id) => {
@@ -434,62 +447,132 @@ function Profile({ refr }) {
         }
     };
     const handleSort = (e) => {
+        setPage(0);
         setSortOrder(e.target.value);
     };
 
     const handleSearch = (e) => {
-        setSearchText(e.target.value);
-    };
+        const value = e.target.value;
 
-    const fetchPhotos = (sort, search) => {
-        try {
-        axios
-            .get("/api/paged/getuserphotos", {
-            params: {page:page,sort:sortOrder,search:searchText},
-            headers: {
-                Authorization: localStorage.getItem("jwtToken"),
-            },
-            })
-            .then((response) => {
-            setSortedPhotos(response.data);
-            })
-            .catch((error) => {
-            console.error("Błąd podczas pobierania zdjęć:", error);
-            });
-        } catch (error) {
-        sendError("Server error: " + error.message);
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
         }
+
+        debounceTimeoutRef.current = setTimeout(() => {
+            setPage(0);
+            setSearchText(value);
+        }, 500);
     };
 
-    const fetchPhotosFromCatalog = (sort, search, id_catalog) => {
-        try {
+    const fetchPhotos = () => {
+    try {
         axios
-            .get("/api/paged/getphotosincatalog", {
-            params: {page:page,sort:sortOrder,search:searchText,id_catalog:selectedCatalogId},
+        .get("/api/paged/getuserphotos", {
+            params: { page, sort: sortOrder, search: searchText },
             headers: {
-                Authorization: localStorage.getItem("jwtToken"),
+            Authorization: localStorage.getItem("jwtToken"),
             },
-            })
-            .then((response) => {
-            setSortedPhotos(response.data);
-            })
-            .catch((error) => {
-            console.error("Błąd podczas pobierania zdjęć:", error);
+        })
+        .then((response) => {
+            if (response.status === 201) {
+            setSortedPhotos((prev) => {
+                const existingIds = new Set(prev.map((p) => p.id_photo));
+                const newUniquePhotos = response.data.filter(
+                (p) => !existingIds.has(p.id_photo)
+                );
+                return [...prev, ...newUniquePhotos];
             });
-        } catch (error) {
+            } else if (response.status === 200) {
+            setFetchNoMore(true);
+            } else {
+            console.warn("Błąd przy pobieraniu zdjęć:", response.data.message);
+            }
+            setLoading(false);
+        })
+        .catch((error) => {
+            console.error("Błąd podczas pobierania zdjęć:", error);
+            setLoading(false);
+        });
+        setPage((prev) => prev + 1);
+    } catch (error) {
         sendError("Server error: " + error.message);
+    }
+    };
+
+    const fetchPhotosFromCatalog = () => {
+    try {
+        axios
+        .get("/api/paged/getphotosincatalog", {
+            params: {
+            page,
+            sort: sortOrder,
+            search: searchText,
+            id_catalog: selectedCatalogId,
+            },
+            headers: {
+            Authorization: localStorage.getItem("jwtToken"),
+            },
+        })
+        .then((response) => {
+            if (response.status === 201) {
+            setSortedPhotos((prev) => {
+                const existingIds = new Set(prev.map((p) => p.id_photo));
+                const newUniquePhotos = response.data.filter(
+                (p) => !existingIds.has(p.id_photo)
+                );
+                return [...prev, ...newUniquePhotos];
+            });
+            } else if (response.status === 200) {
+            setFetchNoMore(true);
+            } else {
+            console.warn("Błąd przy pobieraniu zdjęć:", response.data.message);
+            }
+            setLoading(false);
+        })
+        .catch((error) => {
+            console.error("Błąd podczas pobierania zdjęć:", error);
+            setLoading(false);
+        });
+        setPage((prev) => prev + 1);
+    } catch (error) {
+        sendError("Server error: " + error.message);
+    }
+    };
+
+    useEffect(() => {
+        setSortedPhotos([]);
+        setPage(0);
+        setFetchNoMore(false);
+
+        if (selectedCatalogId >= 0) {
+            fetchPhotosFromCatalog();
+        } else {
+            fetchPhotos();
+        }
+    }, [sortOrder, searchText, selectedCatalogId]);
+
+    const handleScroll = () => {
+        if (fetchNoMore || loading) return;
+
+        const scrollTop = window.scrollY;
+        const docHeight =
+            document.documentElement.scrollHeight - window.innerHeight;
+
+        if (docHeight - scrollTop < 200) {
+            setLoading(true);
+            if (selectedCatalogId >= 0) {
+                fetchPhotosFromCatalog();
+            } else {
+                fetchPhotos();
+            }
         }
     };
 
     useEffect(() => {
-        setPage(0);
-        if(selectedCatalogId>=0){
-            fetchPhotosFromCatalog(sortOrder, searchText, selectedCatalogId);
-        }
-        else{
-            fetchPhotos(sortOrder, searchText);
-        } 
-    }, [sortOrder,searchText,selectedCatalogId]);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [loading, fetchNoMore,page,sortOrder,searchText]);
+
     return (
         <div className={styles.page_container}>
             <main className={styles.content}>
@@ -543,10 +626,10 @@ function Profile({ refr }) {
                         <h2>Moje Zdjęcia</h2>
                         <div className={styles.catalog_group}>
                             <select onChange={handleSort} className={styles.sort_dropdown}>
-                                <option value="title_asc">Nazwa: A - Z</option>
-                                <option value="title_desc">Nazwa: Z - A</option>
                                 <option value="added_desc">Data dodania: od najnowszych</option>
                                 <option value="added_asc">Data dodania: od najstarszych</option>
+                                <option value="title_asc">Nazwa: A - Z</option>
+                                <option value="title_desc">Nazwa: Z - A</option>
                             </select>
                             <input placeholder='Szukaj...' onChange={handleSearch} className={styles.search_input}></input>
                             <select onChange={getCatalogPhotos} className={styles.catalog_dropdown}>
