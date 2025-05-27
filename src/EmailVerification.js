@@ -16,15 +16,15 @@ function EmailVerification() {
       .post("/api/verify-email", { emailToken })
       .then((response) =>{ 
         if (response.status === 200)
-          sendError("Email verification failed.");
+          sendError("Weryfykacja adresu e-mail nie powiodła się!");
         else if (response.status === 201){
-          sendSuccess("Email verified successfully!");
+          sendSuccess("Weryfikacja adresu e-mail zakończona powodzeniem!");
           localStorage.setItem("emailverified","true");
         }
         setTimeout(() => window.location.href="/", 2000);
       })
       .catch(() => {
-        sendError("Email verification failed.");
+        sendError("Weryfykacja adresu e-mail nie powiodła się!");
         setTimeout(() => window.location.href="/", 2000);
       });
   }, []);

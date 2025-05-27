@@ -41,7 +41,7 @@ function Home({ refr }) {
           console.error("Błąd podczas pobierania zdjęć:", error);
         });
     } catch (error) {
-      sendError("Server error: " + error.message);
+      sendError("Błąd serwera: " + error.message);
     }
   },[]);
 
@@ -59,18 +59,18 @@ function Home({ refr }) {
             }) 
             .then((response) => {
                 if (response.status == 200) {
-                    sendError(response.data || "deleting failed.");
+                    sendError(response.data || "Usuwanie nie powiodło się.");
                     return;
                 }
-                sendSuccess("Photo deleted successfully!");
+                sendSuccess("Zdjęcie usunięte pomyślnie!");
                 refr();
             })
             .catch((error) => {
                 console.error("Błąd:", error);
-                sendError("Photo deleting failed.");
+                sendError("Usuwanie nie powiodło się.");
             });
     } catch (error) {
-        sendError("Server error: " + error.message);
+        sendError("Błąd serwera: " + error.message);
     }
   };
 
@@ -121,7 +121,7 @@ function Home({ refr }) {
         setPage(page+1);
         setLoading(false);
     } catch (error) {
-      sendError("Server error: " + error.message);
+      sendError("Błąd serwera: " + error.message);
     }
   };
 

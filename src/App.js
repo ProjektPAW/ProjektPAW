@@ -36,10 +36,10 @@ function App() {
             }
       })
         .catch((error) => {
-            console.error("Błąd:", error);
+            console.error("Błąd: ", error);
         });
     } catch (error) {
-        console.error("Server error: " + error.message);
+        console.error("Błąd serwera: " + error.message);
     }
   };
   useEffect(()=>{

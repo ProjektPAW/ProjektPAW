@@ -33,12 +33,12 @@ function Register() {
         
         e.preventDefault();
         if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
-            sendWarning("All fields are required.");
+            sendWarning("Wszystkie pola są wymagane!");
             return;
         }
         
         if (formData.password !== formData.confirmPassword) {
-            sendError("Passwords do not match.");
+            sendError("Hasła muszą się zgadzać");
             return;
         }
         
@@ -47,18 +47,18 @@ function Register() {
                 .post("/api/register", formData) 
                 .then((response) => {
                     if (response.status === 200) {
-                        sendError(response.data.message || "Registration failed.");
+                        sendError("Rejestracja nie powiodła się!");
                         return;
                     }
-                    sendSuccess("User registered successfully!");
+                    sendSuccess("Rejestracja zakończona pomyślnie!");
                     setTimeout(() => navigate("/"), 2000);
                 })
                 .catch((error) => {
                     console.error("Błąd:", error);
-                    sendError("Registration failed.");
+                    sendError("Rejestracja nie powiodła się!");
                 });
         } catch (error) {
-            sendError("Server error: " + error.message);
+            sendError("Błąd serwera:  " + error.message);
         }
 
     };
@@ -67,20 +67,20 @@ function Register() {
         <div className={styles.page_container}>
             <main className={styles.content}>
                 <div className={styles.register_form}>
-                    <h2>Register</h2>
+                    <h2>Zarejestruj się</h2>
                     <form onSubmit={handleSubmit}>
                         <label>Login:</label>
-                        <input type="text" name="username" onChange={handleChange} placeholder="Enter your login" />
+                        <input type="text" name="username" onChange={handleChange} placeholder="Login" />
 
                         <label>E-mail:</label>
-                        <input type="email" name="email" onChange={handleChange} placeholder="Enter your email" />
+                        <input type="email" name="email" onChange={handleChange} placeholder="E-mail" />
 
-                        <label>Password:</label>
+                        <label>Hasło:</label>
                         <div className={styles.password_container}>
                             <input
                                 type={type}
                                 name="password"
-                                placeholder="Enter password"
+                                placeholder="Hasło"
                                 onChange={handleChange}
                             />
                             <span className={styles.password_icon} onClick={handleToggle}>
@@ -88,12 +88,12 @@ function Register() {
                             </span>
                         </div>
 
-                        <label>Confirm Password:</label>
+                        <label>Potwierdź hasło:</label>
                         <div className={styles.password_container}>
                             <input
                                 type={type}
                                 name="confirmPassword"
-                                placeholder="Confirm password"
+                                placeholder="Potwierdź hasło"
                                 onChange={handleChange}
                             />
                             <span className={styles.password_icon} onClick={handleToggle}>
@@ -102,7 +102,7 @@ function Register() {
                         </div>
                         
                         <div className={styles.register_btn}>
-                            <button type="submit">Register</button>
+                            <button type="submit">Zarejestruj</button>
                         </div>
                     </form>
                 </div>

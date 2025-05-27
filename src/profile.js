@@ -172,22 +172,22 @@ function Profile({ refr }) {
             })
             .then((response) => {
                 if (response.status === 200) {
-                    sendError("Authentication failed");
+                    sendError("Dodawanie zdjęcia nie powiodło się!");
                     return;
                 }
                 else if(response.status === 201){
-                    sendSuccess("Photo added successfully!");
+                    sendSuccess("Zdjęcie dodano pomyślnie!");
                     setShowModal(false);
                     refr();
                 }else 
-                    sendError("Photo addings failed.");
+                    sendError("Dodawanie zdjęcia nie powiodło się!");
             })
             .catch((error) => {
                 console.error("Błąd:", error);
-                sendError("Photo adding failed.");
+                sendError("Dodawanie zdjęcia nie powiodło się!");
             });
         } catch (error) {
-            sendError("Server error: " + error.message);
+            sendError("Błąd serwera: " + error.message);
         }
     };
 
@@ -208,11 +208,11 @@ function Profile({ refr }) {
             })
             .then((response) => {
                 if (response.status === 200) {
-                    sendError("Authentication failed");
+                    sendError("Edycja zdjęcia nie powiodła się!");
                     return;
                 }
                 else if(response.status === 201){
-                    sendSuccess("Photo edited successfully!");
+                    sendSuccess("Edycja zdjęcia zakończona pomyślnie!");
                     setShowModal(false);
                     refr();
                 }else 
@@ -220,10 +220,10 @@ function Profile({ refr }) {
             })
             .catch((error) => {
                 console.error("Błąd:", error);
-                sendError("Photo edit failed.");
+                sendError("Edycja zdjęcia nie powiodła się!");
             });
         } catch (error) {
-            sendError("Server error: " + error.message);
+            sendError("Błąd serwera: " + error.message);
         }
     };
 
@@ -264,24 +264,24 @@ function Profile({ refr }) {
                 }) 
                 .then((response) => {
                     if (response.status == 200) {
-                        sendError(response.data || "deleting failed.");
+                        sendError(response.data || "Usuwanie zdjęcia nie powiodło się!");
                         return;
                     }
-                    sendSuccess("Photo deleted successfully!");
+                    sendSuccess("Zdjęcie usunięte pomyślnie!");
                     refr();
                 })
                 .catch((error) => {
                     console.error("Błąd:", error);
-                    sendError("Photo deleting failed.");
+                    sendError("Usuwanie zdjęcia nie powiodło się!");
                 });
         } catch (error) {
-            sendError("Server error: " + error.message);
+            sendError("Błąd serwera: " + error.message);
         }
     };
 
     const CreateCatalogue = async (e) => {
         if (!newCatalog || newCatalog.name=="" || newCatalog.name.includes(' ')) {
-            sendWarning("Set valid name!");
+            sendWarning("Niepoprawna nazwa katalogu!");
             return;
         }
         
@@ -294,19 +294,19 @@ function Profile({ refr }) {
                 }) 
                 .then((response) => {
                     if (response.status === 200) {
-                        sendError(response.data.message || "Folder adding failed.");
+                        sendError( "Dodawanie katalogu nie powiodło się!");
                         return;
                     }
-                    sendSuccess("Folder added successfully!");
+                    sendSuccess("Katalog dodany pomyślnie!");
                     setShowCatalogModal(false);
                     refr();
                 })
                 .catch((error) => {
                     console.error("Błąd:", error);
-                    sendError("Folder adding failed.");
+                    sendError("Dodawanie katalogu nie powiodło się!");
                 });
         } catch (error) {
-            sendError("Server error: " + error.message);
+            sendError("Błąd serwera: " + error.message);
         }
     };
 
@@ -314,7 +314,7 @@ function Profile({ refr }) {
         e.preventDefault();
 
         if (!selectedCatalogId  || newCatalogName.includes(" ")) {
-            sendWarning("Set a valid new name!");
+            sendError("Niepoprawna nazwa katalogu!");
             return;
         }
 
@@ -385,7 +385,7 @@ function Profile({ refr }) {
                         sendError(response.data || "deleting failed.");
                         return;
                     }
-                    sendSuccess("User deleted successfully!");
+                    sendSuccess("Konto usunięte pomyślnie!");
                     localStorage.removeItem("jwtToken");
                     localStorage.removeItem("username");
                     localStorage.removeItem("email");
@@ -395,10 +395,10 @@ function Profile({ refr }) {
                 })
                 .catch((error) => {
                     console.error("Błąd:", error);
-                    sendError("User deleting failed.");
+                    sendError("Usuwanie konta nie powiodło się!");
                 });
         } catch (error) {
-            sendError("Server error: " + error.message);
+            sendError("Błąd serwera: " + error.message);
         }
     };
     const handleChangePassword = (e) =>{
@@ -407,7 +407,7 @@ function Profile({ refr }) {
     const handleSubmitChangePassword = (e) => {
         e.preventDefault();
         if(changePasswordFromData.newPassword!=changePasswordFromData.confirmedNewPassword){
-            sendError("Passowrds must match!");
+            sendError("Hasła muszą się zgadzać");
             return;
         }
         try {
@@ -419,22 +419,22 @@ function Profile({ refr }) {
             })
             .then((response) => {
                 if (response.status === 200) {
-                    sendError("Current password incorrect!");
+                    sendError("Niepoprawne hasło!");
                     return;
                 }
                 else if(response.status === 201){
-                    sendSuccess("Password changed successfully!");
+                    sendSuccess("Zmiana hasła zakończona sukcesem!");
                     setShowChangePasswordModal(false);
                     refr();
                 }else 
-                    sendError("Password change failed.");
+                    sendError("Zmiana hasła nie powiodła się!");
             })
             .catch((error) => {
                 console.error("Error:", error);
-                sendError("Password change failed.");
+                sendError("Zmiana hasła nie powiodła się!");
             });
         } catch (error) {
-            sendError("Server error: " + error.message);
+            sendError("Błąd serwera: " + error.message);
         }
     };
     const handleToggle = () => {
@@ -495,7 +495,7 @@ function Profile({ refr }) {
         });
         setPage((prev) => prev + 1);
     } catch (error) {
-        sendError("Server error: " + error.message);
+        sendError("Błąd serwera: " + error.message);
     }
     };
 
@@ -535,7 +535,7 @@ function Profile({ refr }) {
         });
         setPage((prev) => prev + 1);
     } catch (error) {
-        sendError("Server error: " + error.message);
+        sendError("Błąd serwera: " + error.message);
     }
     };
 

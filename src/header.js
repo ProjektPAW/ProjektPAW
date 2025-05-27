@@ -30,21 +30,21 @@ function Header({ refr }) {
               localStorage.setItem("emailverified", data.emailverified);
               setIsLogged(true);
               setFormData({ username: "", password: "" });
-              sendSuccess("Logged in successfully!");
+              sendSuccess("Zalogowano pomyślnie!");
               refr();
             } else {
-              sendError(data.message || "Login failed.");
+              sendError("Logowanie nie powiodło się.");
             }
           } else {
-            sendError(data.message || "Login failed.");
+            sendError("Logowanie nie powiodło się.");
           }
         })
         .catch((error) => {
           console.error("Błąd:", error);
-          sendError("Login failed.");
+          sendError("Logowanie nie powiodło się.");
         });
     } catch (error) {
-      sendError("Server error: " + error.message);
+      sendError("Błąd serwera: " + error.message);
     }
   };
 
@@ -54,7 +54,7 @@ function Header({ refr }) {
     localStorage.removeItem("email");
     localStorage.removeItem("role");
     localStorage.removeItem("emailverified");
-    sendSuccess("Logout successful!");
+    sendSuccess("Wylogowano pomyślnie!");
     setIsLogged(false);
     refr();
   };
@@ -84,7 +84,7 @@ function Header({ refr }) {
             </button>
             <Link to="/register">
               <button className={`${styles.header_btn} ${styles.register_btn}`}>
-                Register
+                Rejestracja
               </button>
             </Link>
           </form>
@@ -94,13 +94,13 @@ function Header({ refr }) {
            {verifiedEmail=="false" ?(
               <div className={styles.verify_email_container}>
                 <p>
-                  Hello, <strong>{localStorage.getItem("username")}</strong>!
+                  Witaj, <strong>{localStorage.getItem("username")}</strong>!
                 </p>
-                <div style={{ color: '#d32f2f', fontWeight: 'bold' , paddingTop: 4 + 'px'}}>Please verify your email!</div>
+                <div style={{ color: '#d32f2f', fontWeight: 'bold' , paddingTop: 4 + 'px'}}>Zweryfikuj swój adres e-mail!</div>
               </div>
              ):(
               <p>
-                Hello, <strong>{localStorage.getItem("username")}</strong>!
+                Witaj, <strong>{localStorage.getItem("username")}</strong>!
               </p>
              )
             }
@@ -114,7 +114,7 @@ function Header({ refr }) {
             className={`${styles.header_btn} ${styles.logout_btn}`}
             onClick={handleLogout}
           >
-            Logout
+            Wyloguj
           </button>
         </div>
       )}
