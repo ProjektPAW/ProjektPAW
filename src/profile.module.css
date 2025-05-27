@@ -51,7 +51,7 @@
 .edit_btn:hover{
     background-color: #ccc;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    transform: scale(1.1);  /* Slightly grow the button */
+    transform: scale(1.1); 
 }
 
 .delete_btn{
@@ -69,18 +69,18 @@
 .delete_btn:hover{
     background-color: #ff0000;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    transform: scale(1.1);  /* Slightly grow the button */
+    transform: scale(1.1);
 }
 
 .delete_btn img {
     width: 16px;
     height: 16px;
     object-fit: contain;
-    transition: filter 0.3s ease;  /* Smooth transition for filter effect */
+    transition: filter 0.3s ease;
 }
 
 .delete_btn:hover img {
-    filter: invert(1);  /* Invert the color of the image on hover */
+    filter: invert(1);
 }
 
 .title_container{
@@ -97,7 +97,7 @@
 }
 .title_container h4{
     display: inline;
-    max-width: 80%;
+    max-width: 100%;
 }
 
 .page_container {

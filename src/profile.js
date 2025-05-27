@@ -317,7 +317,11 @@ function Profile({ refr }) {
             sendError("Niepoprawna nazwa katalogu!");
             return;
         }
-
+        if(newCatalogName==""){
+            sendError("Nowa nazwa katalogu jest taka sama jak poprzednia");
+            return;
+        }
+            
         try {
             const response = await axios.patch(
                 "/api/editcatalog",
