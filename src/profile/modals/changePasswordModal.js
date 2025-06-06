@@ -12,11 +12,13 @@ const ChangePasswordModal = ({
   icon,
     handleToggle
 }) => {
-  if (!showChangePasswordModal) return null;
+  if (!showChangePasswordModal) return null; // Nie renderuj modala jeśli flaga jest false
 
   return (
     <div className={photoStyles.modal_overlay} onClick={() => setShowChangePasswordModal(false)}>
+       {/* Kliknięcie poza modal zamyka go */}
       <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+        {/* Zapobiega zamknięciu modala przy kliknięciu w jego treść */}
         <span className={photoStyles.close_modal} onClick={() => setShowChangePasswordModal(false)}>
           <img src={closeImg} alt="Close" className={photoStyles.icon_close} />
         </span>
@@ -35,7 +37,7 @@ const ChangePasswordModal = ({
                 <div className={styles.password_container}>
                   <input
                     name={field}
-                    type={type}
+                    type={type} // pokazuje lub ukrywa hasło w zależności od stanu
                     placeholder={
                       field === "oldPassword"
                         ? "Podaj obecne hasło..."
@@ -46,6 +48,7 @@ const ChangePasswordModal = ({
                     onChange={handleChangePassword}
                     required
                   />
+                  {/* Ikona do pokazywania/ukrywania hasła */}
                   <span className={passwordInputStyles.password_icon} onClick={handleToggle}>
                     {icon}
                   </span>

@@ -8,8 +8,8 @@ export default function useCatalogs(refr) {
   const [catalogs, setCatalogs] = useState([]);
 
   /** PER-PHOTO CATALOG STATE **/
-  const [catalogList, setCatalogList] = useState({});
-  const [checkedCatalogsList, setCheckedCatalogsList] = useState([]);
+  const [catalogList, setCatalogList] = useState({}); // obiekt {[id_catalog]: true}
+  const [checkedCatalogsList, setCheckedCatalogsList] = useState([]); // tylko ID
   const [catalogsLoaded, setCatalogsLoaded] = useState(false);
 
   /** MODAL FLAGS **/
@@ -23,6 +23,7 @@ export default function useCatalogs(refr) {
   const [newCatalog, setNewCatalog] = useState({ name: "" });
   const [newCatalogName, setNewCatalogName] = useState("");
 
+  // Pobierz katalogi użytkownika
   useEffect(() => {
     const allOption = { id_catalog: -1, name: "All", id_user: null };
     axios
@@ -30,7 +31,7 @@ export default function useCatalogs(refr) {
         headers: { Authorization: localStorage.getItem("jwtToken") },
       })
       .then((res) => {
-        setCatalogs([allOption, ...res.data]);
+        setCatalogs([allOption, ...res.data]); // dodaje "All" jako uniwersalną opcję
       })
       .catch((err) => {
         console.error("Błąd pobierania folderów:", err);
@@ -42,6 +43,7 @@ export default function useCatalogs(refr) {
     setNewCatalog((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Obsługa checkboxów dla katalogów zdjęcia
   const handleSetCatalogs = (e) => {
     const { name, checked } = e.target;
     setCatalogList((prev) => ({ ...prev, [name]: checked }));
@@ -62,7 +64,7 @@ export default function useCatalogs(refr) {
         } else {
           sendSuccess("Katalog dodany pomyślnie!");
           setShowCatalogModal(false);
-          refr();
+          refr(); // odświeżenie katalogów
         }
       })
       .catch((err) => {
@@ -90,7 +92,7 @@ export default function useCatalogs(refr) {
       .then(() => {
         sendSuccess("Katalog został zaktualizowany!");
         setShowEditCatalogModal(false);
-        refr();
+        refr(); // odświeżenie po edycji
       })
       .catch((err) => {
         console.error("Błąd edycji katalogu:", err);
@@ -114,7 +116,7 @@ export default function useCatalogs(refr) {
       .then(() => {
         sendSuccess("Katalog został usunięty.");
         setShowEditCatalogModal(false);
-        refr();
+        refr(); // aktualizacja listy po usunięciu
       })
       .catch((err) => {
         console.error("Błąd usuwania katalogu:", err);
@@ -122,6 +124,7 @@ export default function useCatalogs(refr) {
       });
   };
 
+  // Ładuje listę katalogów przypisanych do zdjęcia
   const loadPhotoCatalogs = (photoId) => {
     setCatalogList({});
     setCheckedCatalogsList([]);
@@ -140,8 +143,8 @@ export default function useCatalogs(refr) {
           return acc;
         }, {});
 
-        setCatalogList(catalogObj);
-        setCheckedCatalogsList(tempIds);
+        setCatalogList(catalogObj); // np. {2: true, 5: true}
+        setCheckedCatalogsList(tempIds); // np. [2, 5]
         setCatalogsLoaded(true);
       })
       .catch((err) => {

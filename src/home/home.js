@@ -6,7 +6,9 @@ import styles from "../styles/home.module.css";
 import SortSearchBar from "./sortSearchBar";
 import PhotoDetailsModal from "./photoDetailsModal";
 
+
 export default function Home({ refr }) {
+  // Hook odpowiedzialny za pobieranie i obsługę publicznych zdjęć
   const {
     carouselPhotos,
     sortedPhotos,
@@ -16,6 +18,7 @@ export default function Home({ refr }) {
     searchText,
   } = usePublicPhotos(refr);
 
+  // selectedPhoto przechowuje wybrane zdjęcie, aby otworzyć modal ze szczegółami
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   return (

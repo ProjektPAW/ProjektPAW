@@ -6,8 +6,11 @@ import {sendError, sendSuccess, sendWarning} from './toast'
 import axios from "axios";
 
 function Register() {
+    // Stan do kontroli widoczności hasła i ikony oka
     const [type, setType] = useState('password');
     const [icon, setIcon] = useState(FaEyeSlash); 
+
+    // Dane formularza rejestracji
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -16,6 +19,7 @@ function Register() {
     });
     const navigate = useNavigate();
 
+    // Funkcja do przełączania widoczności hasła i zmiany ikony
     const handleToggle = () => {
         if (type === 'password') {
             setIcon(FaEye);
@@ -25,13 +29,17 @@ function Register() {
             setType('password');
         }
     };
+
+    // Aktualizacja stanu formularza przy zmianie inputów
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    // Obsługa submit formularza rejestracji
     const handleSubmit = async (e) => {
         
         e.preventDefault();
+        // Walidacja: wszystkie pola muszą być wypełnione
         if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
             sendWarning("Wszystkie pola są wymagane!");
             return;

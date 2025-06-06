@@ -12,14 +12,16 @@ const EditCatalogModal = ({
   handleEditCatalogSubmit,
   handleDeleteCatalog,
 }) => {
-  if (!showEditCatalogModal) return null;
+  if (!showEditCatalogModal) return null; // Nie renderuj jeśli modal jest wyłączony
 
-  // Get the current catalog name for the selected id
+  // Znajdź katalog o wybranym id, żeby pokazać aktualną nazwę jako placeholder
   const currentCatalog = catalogs.find((c) => c.id_catalog === selectedCatalogId);
 
   return (
     <div className={photoStyles.modal_overlay} onClick={() => setShowEditCatalogModal(false)}>
+      {/* Kliknięcie poza modal zamyka go */}
       <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+        {/* Zapobiega zamknięciu przy kliknięciu wewnątrz modala */}
         <span className={photoStyles.close_modal} onClick={() => setShowEditCatalogModal(false)}>
           <img src={closeImg} alt="Close" className={photoStyles.icon_close} />
         </span>

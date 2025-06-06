@@ -2,18 +2,19 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { sendError, sendSuccess, sendWarning } from "../../toast";
 
+// Hook zarządzający zdjęciami (dodawanie, edycja, usuwanie, pobieranie)
 export default function usePhotos(refr, selectedCatalogId) {
-  // ————— STATE FOR PHOTO LIST —————
+  // —— Lista zdjęć + kontrola paginacji i ładowania ——
   const [sortedPhotos, setSortedPhotos] = useState([]);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(0); // aktualna strona
   const [sortOrder, setSortOrder] = useState("added_desc");
   const [searchText, setSearchText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [fetchNoMore, setFetchNoMore] = useState(false);
+  const [loading, setLoading] = useState(false); // status ładowania zdjęć
+  const [fetchNoMore, setFetchNoMore] = useState(false); // czy wszystkie zdjęcia zostały załadowane
 
   const debounceTimeoutRef = useRef(null);
 
-  // ————— STATE FOR “ADD PHOTO” FORM —————
+  // —— Formularz dodawania zdjęcia ——
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -21,7 +22,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     photo: null,
   });
 
-  // ————— STATE FOR “EDIT PHOTO” FORM —————
+  // —— Formularz edycji zdjęcia ——
   const [editFormData, setEditFormData] = useState({
     title: "",
     description: "",
@@ -29,7 +30,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     id_photo: null,
   });
 
-  // Whenever sortOrder, searchText, or selectedCatalogId changes, reset list & fetch page 0
+   // —— Resetowanie listy i pobranie zdjęć przy zmianie sortowania, wyszukiwania lub katalogu ——
   useEffect(() => {
     setSortedPhotos([]);
     setPage(0);
@@ -42,7 +43,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     }
   }, [sortOrder, searchText, selectedCatalogId]);
 
-  // Infinite‐scroll handler
+  // —— Obsługa scrollowania: wczytywanie kolejnych zdjęć gdy użytkownik zbliży się do dołu strony ——
   const handleScroll = () => {
     if (fetchNoMore || loading) return;
     const scrollTop = window.scrollY;
@@ -57,12 +58,13 @@ export default function usePhotos(refr, selectedCatalogId) {
     }
   };
 
+  // —— Dodanie/odpięcie listenera scrollowania ——
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loading, fetchNoMore, page, sortOrder, searchText, selectedCatalogId]);
 
-  // ————— FETCH “ALL” PHOTOS —————
+  // —— Pobieranie zdjęć użytkownika (bez filtrowania po katalogu) ——
   const fetchPhotos = (pageToFetch = 0, sort = sortOrder, search = searchText) => {
     axios
       .get("/api/paged/getuserphotos", {
@@ -72,12 +74,13 @@ export default function usePhotos(refr, selectedCatalogId) {
       .then((res) => {
         if (res.status === 201) {
           setSortedPhotos((prev) => {
+            // Dodaj nowe zdjęcia jeśli ich jeszcze nie było
             const existingIds = new Set(prev.map((p) => p.id_photo));
             const newUnique = res.data.filter((p) => !existingIds.has(p.id_photo));
             return [...prev, ...newUnique];
           });
         } else if (res.status === 200) {
-          setFetchNoMore(true);
+          setFetchNoMore(true); // brak kolejnych zdjęć
         }
         setLoading(false);
         setPage(pageToFetch);
@@ -88,7 +91,7 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // ————— FETCH “PHOTOS IN A CATALOG” —————
+  // —— Pobieranie zdjęć z konkretnego katalogu ——
   const fetchPhotosFromCatalog = (pageToFetch = 0, sort = sortOrder, search = searchText) => {
     axios
       .get("/api/paged/getphotosincatalog", {
@@ -114,7 +117,7 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // ————— HANDLER: form‐data change for “ADD PHOTO” —————
+  // —— Obsługa zmiany pól formularza “dodaj zdjęcie” ——
   const handleAddPhotoChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     if (name === "photo") {
@@ -126,7 +129,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     }
   };
 
-  // ————— HANDLER: submit “ADD PHOTO” —————
+  // —— Obsługa dodania zdjęcia ——
   const addPhoto = (e, catalogList, closeModal) => {
     e.preventDefault();
     if (!formData.photo || formData.photo.type.split("/")[0] !== "image") {
@@ -164,7 +167,7 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // ————— HANDLER: prepare data for “EDIT PHOTO” —————
+  // —— Uzupełnienie formularza edycji istniejącym zdjęciem ——
   const prepareEditForm = (photo) => {
     setEditFormData({
       title: photo.title,
@@ -174,7 +177,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     });
   };
 
-  // ————— HANDLER: form‐data change for “EDIT PHOTO” —————
+  // —— Obsługa zmiany pól formularza “edytuj zdjęcie” ——
   const handleEditPhotoChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (name === "is_private") {
@@ -192,7 +195,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     }
   };
 
-  // ————— HANDLER: submit “EDIT PHOTO” —————
+  // —— Obsługa edycji zdjęcia ——
   const editPhoto = (e, catalogList, closeModal) => {
     e.preventDefault();
     axios
@@ -223,7 +226,7 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // ————— HANDLER: delete a photo by ID —————
+  // —— Usunięcie zdjęcia po potwierdzeniu ——
   const deletePhoto = (id) => {
     const confirmDelete = window.confirm("Na pewno chcesz usunąć to zdjęcie?");
     if (!confirmDelete) return;
@@ -247,12 +250,13 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // ————— HANDLERS FOR SORT & SEARCH FIELDS —————
+  // —— Zmiana sortowania ——
   const handleSort = (e) => {
     setPage(0);
     setSortOrder(e.target.value);
   };
 
+  // —— Obsługa pola wyszukiwania z opóźnieniem (debounce) ——
   const handleSearch = (e) => {
     const value = e.target.value;
     clearTimeout(debounceTimeoutRef.current);

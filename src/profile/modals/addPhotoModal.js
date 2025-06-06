@@ -10,11 +10,13 @@ const PhotoUploadModal = ({
   handleSetCatalogs,
   catalogs
 }) => {
-  if (!showModal) return null;
+  if (!showModal) return null; // Renderuj modal tylko gdy showModal jest true
 
   return (
     <div className={styles.modal_overlay} onClick={() => setShowModal(false)}>
+      {/* Kliknięcie na overlay zamyka modal */}
       <div className={photoStyles.modal_photo} onClick={(e) => e.stopPropagation()}>
+        {/* Zapobiega zamknięciu modala po kliknięciu w jego wnętrze */}
         <span className={photoStyles.close_modal} onClick={() => setShowModal(false)}>
           <img src={closeImg} alt="Close" className={photoStyles.icon_close} />
         </span>

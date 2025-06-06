@@ -11,9 +11,10 @@ import Footer from "./footer";
 import axios from 'axios';
 
 function App() {
-  const [key, setKey] = useState(0);
+  const [key, setKey] = useState(0); // refr() – zmienia stan key, co powoduje przeładowanie komponentów z kluczem key
   function refr () {setKey((prevKey) => prevKey + 1);}
 
+   // Sprawdza czy token JWT istnieje w localStorage, by określić, czy użytkownik jest zalogowany
   const isLoggedIn = localStorage.getItem("jwtToken") !== null;
 
   function refreshToken() {
@@ -26,11 +27,13 @@ function App() {
         })
         .then((response) => {
             if (response.status === 200) {
-                localStorage.setItem("jwtToken",-1);
-                setTimeout(() => window.location.href="/", 2000);
+                // Status 200 – token nieważny lub sesja wygasła; usuń token i przekieruj do strony głównej
+                localStorage.removeItem("jwtToken");
+                setTimeout(() => window.location.href = "/", 2000);
                 return;
             }
             else if(response.status === 201){
+              // Status 201 – nowy token dostępny, podmień go w localStorage
               localStorage.setItem("jwtToken",response.data.token);
             }
       })
@@ -41,10 +44,13 @@ function App() {
         console.error("Błąd serwera: " + error.message);
     }
   };
-  useEffect(()=>{
-    if(isLoggedIn)
-      setInterval(refreshToken, 900000);
-  },[isLoggedIn]);
+  useEffect(() => {
+    if (isLoggedIn) {
+      // Ustawia odświeżanie tokena co 15 minut (900 000 ms)
+      const intervalId = setInterval(refreshToken, 900000);
+      return () => clearInterval(intervalId);
+    }
+  }, [isLoggedIn]);
   return (
     <BrowserRouter>
     <Header refr={refr}/>
@@ -52,6 +58,7 @@ function App() {
       <Routes >
         <Route path="/" element={<Home key={key} refr={refr}/>}/>
         <Route path="/register" element={<Register key={key}/>}/>
+        {/* Profile dostępny tylko gdy zalogowany, inaczej przekierowanie na "/" */}
         <Route path="/profile"  element={isLoggedIn ? <Profile key={key} refr={refr} /> : <Navigate to="/" />} />
         <Route path="/verify-email" element={<EmailVerification key={key} refr={refr} />} />
       </Routes>

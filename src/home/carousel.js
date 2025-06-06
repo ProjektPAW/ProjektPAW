@@ -7,8 +7,9 @@ import "swiper/css/navigation";
 import styles from "../styles/home.module.css";
 
 export default function Carousel({ photos }) {
+  // Walidacja danych
   if (!Array.isArray(photos) || photos.length < 3) return null;
-
+  // Wyświetlanie karuzeli jeżeli otrzymana tablica zdjęć jes poprawna i zawiera więcej niż 3 zdjęcia
   return (
     <div>
       <h2 className={styles.carousel_title}>Wyróżnione Zdjęcia</h2>

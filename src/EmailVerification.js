@@ -21,14 +21,16 @@ function EmailVerification() {
           sendSuccess("Weryfikacja adresu e-mail zakończona powodzeniem!");
           localStorage.setItem("emailverified","true");
         }
+        // Po 2 sekundach przekierowujemy na stronę główną
         setTimeout(() => window.location.href="/", 2000);
       })
       .catch(() => {
         sendError("Weryfykacja adresu e-mail nie powiodła się!");
         setTimeout(() => window.location.href="/", 2000);
       });
-  }, []);
-  return (
+  }, []); // Efekt uruchamia się tylko raz po mountowaniu komponentu
+  // Pusty div z wysokością by "zająć miejsce" podczas weryfikacji
+  return ( 
     <div style={{height: 76 + 'vh'}}></div>
   );
 }

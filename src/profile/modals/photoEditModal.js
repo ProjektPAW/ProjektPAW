@@ -1,4 +1,3 @@
-// PhotoEditModal.jsx
 import photoStyles from "../../styles/photoGalery.module.css";
 import styles from "../../styles/profile.module.css";
 import closeImg from "../../public/imgs/close.png";
