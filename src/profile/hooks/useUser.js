@@ -19,7 +19,7 @@ export default function useUser() {
       .catch((err) => {
         console.error("Błąd pobierania użytkownika:", err);
       });
-  }, []); // pusty array – efekt uruchamia się tylko raz
+  }, []); // Pusta tablica – efekt uruchamia się tylko raz
 
   return { userData }; // Zwracamy dane użytkownika do komponentu korzystającego z hooka
 }

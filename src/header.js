@@ -35,7 +35,7 @@ function Header({ refr }) {
               localStorage.setItem("role", data.role);
               localStorage.setItem("emailverified", data.emailverified);
               setIsLogged(true);
-              setFormData({ username: "", password: "" }); // czyścimy formularz
+              setFormData({ username: "", password: "" }); // Czyścimy formularz
               sendSuccess("Zalogowano pomyślnie!");
               refr(); 
             } else {

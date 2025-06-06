@@ -19,11 +19,10 @@ import SearchSortBar from "../searchSortBar";
 import styles from "../styles/profile.module.css";
 
 function Profile({ refr }) {
-  // ————— USER & ACCOUNT —————
   const { userData } = useUser();
   const { deleteUser } = useUserAccount();
 
-  // ————— CATALOGS HOOK —————
+  // Hooki do katalogów
   const {
     catalogs,
     catalogList,
@@ -47,7 +46,7 @@ function Profile({ refr }) {
     setCatalogList,
   } = useCatalogs(refr);
 
-  // ————— PHOTOS HOOK —————
+  // Hooki do zdjec
   const {
     sortedPhotos,
     searchText,
@@ -61,19 +60,19 @@ function Profile({ refr }) {
     handleEditPhotoChange,
   } = usePhotos(refr, selectedCatalogId);
 
-  // ————— PASSWORD-CHANGE HOOK —————
+  // Hooki do zmiany hasła
   const {
     handleChangePassword,
     handleSubmitChangePassword,
   } = usePasswordChange(refr, () => setShowChangePasswordModal(false));
 
-  // ————— LOCAL MODAL STATE —————
+  // Stany do modali
   const [showModal, setShowModal] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [selectedEdit, setSelectedEdit] = useState(null);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
-  // ————— PASSWORD-TOGGLE STATE —————
+  // Stany do pola i ikony hasła
   const [type, setType] = useState("password");
   const [icon, setIcon] = useState(FaEyeSlash);
 

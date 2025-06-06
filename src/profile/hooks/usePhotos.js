@@ -4,7 +4,7 @@ import { sendError, sendSuccess, sendWarning } from "../../toast";
 
 // Hook zarządzający zdjęciami (dodawanie, edycja, usuwanie, pobieranie)
 export default function usePhotos(refr, selectedCatalogId) {
-  // —— Lista zdjęć + kontrola paginacji i ładowania ——
+  // Lista zdjęć + kontrola paginacji i ładowania
   const [sortedPhotos, setSortedPhotos] = useState([]);
   const [page, setPage] = useState(0); // aktualna strona
   const [sortOrder, setSortOrder] = useState("added_desc");
@@ -14,7 +14,7 @@ export default function usePhotos(refr, selectedCatalogId) {
 
   const debounceTimeoutRef = useRef(null);
 
-  // —— Formularz dodawania zdjęcia ——
+  // Formularz dodawania zdjęcia
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -22,7 +22,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     photo: null,
   });
 
-  // —— Formularz edycji zdjęcia ——
+  // Formularz edycji zdjęcia
   const [editFormData, setEditFormData] = useState({
     title: "",
     description: "",
@@ -30,7 +30,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     id_photo: null,
   });
 
-   // —— Resetowanie listy i pobranie zdjęć przy zmianie sortowania, wyszukiwania lub katalogu ——
+   // Resetowanie listy i pobranie zdjęć przy zmianie sortowania, wyszukiwania lub katalogu
   useEffect(() => {
     setSortedPhotos([]);
     setPage(0);
@@ -43,7 +43,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     }
   }, [sortOrder, searchText, selectedCatalogId]);
 
-  // —— Obsługa scrollowania: wczytywanie kolejnych zdjęć gdy użytkownik zbliży się do dołu strony ——
+  // Obsługa scrollowania: wczytywanie kolejnych zdjęć gdy użytkownik zbliży się do dołu strony
   const handleScroll = () => {
     if (fetchNoMore || loading) return;
     const scrollTop = window.scrollY;
@@ -58,13 +58,13 @@ export default function usePhotos(refr, selectedCatalogId) {
     }
   };
 
-  // —— Dodanie/odpięcie listenera scrollowania ——
+  // Dodanie/odpięcie listenera scrollowania
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loading, fetchNoMore, page, sortOrder, searchText, selectedCatalogId]);
 
-  // —— Pobieranie zdjęć użytkownika (bez filtrowania po katalogu) ——
+  // Pobieranie zdjęć użytkownika (bez filtrowania po katalogu)
   const fetchPhotos = (pageToFetch = 0, sort = sortOrder, search = searchText) => {
     axios
       .get("/api/paged/getuserphotos", {
@@ -80,7 +80,7 @@ export default function usePhotos(refr, selectedCatalogId) {
             return [...prev, ...newUnique];
           });
         } else if (res.status === 200) {
-          setFetchNoMore(true); // brak kolejnych zdjęć
+          setFetchNoMore(true); // Brak kolejnych zdjęć
         }
         setLoading(false);
         setPage(pageToFetch);
@@ -91,7 +91,7 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // —— Pobieranie zdjęć z konkretnego katalogu ——
+  // Pobieranie zdjęć z konkretnego katalogu
   const fetchPhotosFromCatalog = (pageToFetch = 0, sort = sortOrder, search = searchText) => {
     axios
       .get("/api/paged/getphotosincatalog", {
@@ -117,7 +117,7 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // —— Obsługa zmiany pól formularza “dodaj zdjęcie” ——
+  // Obsługa zmiany pól formularza “dodaj zdjęcie”
   const handleAddPhotoChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     if (name === "photo") {
@@ -129,7 +129,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     }
   };
 
-  // —— Obsługa dodania zdjęcia ——
+  // Obsługa dodania zdjęcia
   const addPhoto = (e, catalogList, closeModal) => {
     e.preventDefault();
     if (!formData.photo || formData.photo.type.split("/")[0] !== "image") {
@@ -167,7 +167,7 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // —— Uzupełnienie formularza edycji istniejącym zdjęciem ——
+  // Uzupełnienie formularza edycji istniejącym zdjęciem
   const prepareEditForm = (photo) => {
     setEditFormData({
       title: photo.title,
@@ -177,7 +177,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     });
   };
 
-  // —— Obsługa zmiany pól formularza “edytuj zdjęcie” ——
+  // Obsługa zmiany pól formularza “edytuj zdjęcie”
   const handleEditPhotoChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (name === "is_private") {
@@ -195,7 +195,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     }
   };
 
-  // —— Obsługa edycji zdjęcia ——
+  // Obsługa edycji zdjęcia
   const editPhoto = (e, catalogList, closeModal) => {
     e.preventDefault();
     axios
@@ -226,7 +226,7 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // —— Usunięcie zdjęcia po potwierdzeniu ——
+  // Usunięcie zdjęcia po potwierdzeniu
   const deletePhoto = (id) => {
     const confirmDelete = window.confirm("Na pewno chcesz usunąć to zdjęcie?");
     if (!confirmDelete) return;
@@ -250,13 +250,13 @@ export default function usePhotos(refr, selectedCatalogId) {
       });
   };
 
-  // —— Zmiana sortowania ——
+  // Zmiana sortowania
   const handleSort = (e) => {
     setPage(0);
     setSortOrder(e.target.value);
   };
 
-  // —— Obsługa pola wyszukiwania z opóźnieniem (debounce) ——
+  // Obsługa pola wyszukiwania z opóźnieniem (debounce)
   const handleSearch = (e) => {
     const value = e.target.value;
     clearTimeout(debounceTimeoutRef.current);

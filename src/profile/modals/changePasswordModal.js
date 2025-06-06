@@ -37,7 +37,7 @@ const ChangePasswordModal = ({
                 <div className={styles.password_container}>
                   <input
                     name={field}
-                    type={type} // pokazuje lub ukrywa hasło w zależności od stanu
+                    type={type} // Pokazuje lub ukrywa hasło w zależności od stanu
                     placeholder={
                       field === "oldPassword"
                         ? "Podaj obecne hasło..."

@@ -6,14 +6,14 @@ const SortSearchBar = ({ handleSort, handleSearch }) => {
     <div className={styles.sort_container}>
       <h2>Publiczne Zdjęcia</h2>
       <div className={styles.sort_search_container}>
-        {/* rozwijane menu do sortowania zdjęć */}
+        {/* Rozwijane menu do sortowania zdjęć */}
         <select onChange={handleSort} className={styles.sort_dropdown}>
           <option value="added_desc">Data dodania: od najnowszych</option>
           <option value="added_asc">Data dodania: od najstarszych</option>
           <option value="title_asc">Nazwa: A - Z</option>
           <option value="title_desc">Nazwa: Z - A</option>
         </select>
-        {/* pole wyszukiwania zdjęć po tytule */}
+        {/* Pole wyszukiwania zdjęć po tytule */}
         <input
           placeholder="Szukaj..."
           onChange={handleSearch}

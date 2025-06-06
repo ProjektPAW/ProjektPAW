@@ -1,25 +1,23 @@
-// src/profile/hooks/useCatalogs.js
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { sendError, sendSuccess, sendWarning } from "../../toast";
 
 export default function useCatalogs(refr) {
-  /** GLOBAL CATALOG STATE (all catalogs) **/
+  // Stan do listy katalogów
   const [catalogs, setCatalogs] = useState([]);
 
-  /** PER-PHOTO CATALOG STATE **/
   const [catalogList, setCatalogList] = useState({}); // obiekt {[id_catalog]: true}
   const [checkedCatalogsList, setCheckedCatalogsList] = useState([]); // tylko ID
   const [catalogsLoaded, setCatalogsLoaded] = useState(false);
 
-  /** MODAL FLAGS **/
+  // Stany modali
   const [showCatalogModal, setShowCatalogModal] = useState(false);
   const [showEditCatalogModal, setShowEditCatalogModal] = useState(false);
 
-  /** SELECTED CATALOG FOR “FILTER” OR “EDIT” **/
+  // Katalog wybrany do edycji
   const [selectedCatalogId, setSelectedCatalogId] = useState(-1);
 
-  /** NEW‐CATALOG FORM STATE **/
+  // Stany do dodawania katalogów
   const [newCatalog, setNewCatalog] = useState({ name: "" });
   const [newCatalogName, setNewCatalogName] = useState("");
 
@@ -31,7 +29,7 @@ export default function useCatalogs(refr) {
         headers: { Authorization: localStorage.getItem("jwtToken") },
       })
       .then((res) => {
-        setCatalogs([allOption, ...res.data]); // dodaje "All" jako uniwersalną opcję
+        setCatalogs([allOption, ...res.data]); // Dodaje "All" jako uniwersalną opcję
       })
       .catch((err) => {
         console.error("Błąd pobierania folderów:", err);
@@ -64,7 +62,7 @@ export default function useCatalogs(refr) {
         } else {
           sendSuccess("Katalog dodany pomyślnie!");
           setShowCatalogModal(false);
-          refr(); // odświeżenie katalogów
+          refr(); // Odświeżenie katalogów
         }
       })
       .catch((err) => {
@@ -92,7 +90,7 @@ export default function useCatalogs(refr) {
       .then(() => {
         sendSuccess("Katalog został zaktualizowany!");
         setShowEditCatalogModal(false);
-        refr(); // odświeżenie po edycji
+        refr(); // Odświeżenie po edycji
       })
       .catch((err) => {
         console.error("Błąd edycji katalogu:", err);
@@ -116,7 +114,7 @@ export default function useCatalogs(refr) {
       .then(() => {
         sendSuccess("Katalog został usunięty.");
         setShowEditCatalogModal(false);
-        refr(); // aktualizacja listy po usunięciu
+        refr(); // Aktualizacja listy po usunięciu
       })
       .catch((err) => {
         console.error("Błąd usuwania katalogu:", err);
@@ -154,38 +152,25 @@ export default function useCatalogs(refr) {
   };
 
   return {
-    // GLOBAL
     catalogs,
-
-    // PER-PHOTO
     catalogList,
     setCatalogList,
     checkedCatalogsList,
     catalogsLoaded,
     loadPhotoCatalogs,
-
-    // MODALS
     showCatalogModal,
     setShowCatalogModal,
     showEditCatalogModal,
     setShowEditCatalogModal,
-
-    // FILTER / EDIT ID
     selectedCatalogId,
     setSelectedCatalogId,
-
-    // NEW CATALOG
     newCatalog,
     handleCatalogChange,
     createCatalog,
-
-    // EDIT CATALOG
     newCatalogName,
     setNewCatalogName,
     editCatalog,
     deleteCatalog,
-
-    // CHECKBOX HANDLER FOR ADD/EDIT PHOTO
     handleSetCatalogs,
   };
 }

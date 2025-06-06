@@ -3,21 +3,21 @@ import photoStyles from "../styles/photoGalery.module.css";
 import closeImg from "../public/imgs/close.png";
 
 const PhotoDetailsModal = ({ selectedPhoto, setSelectedPhoto }) => {
-  // jeśli nie wybrano zdjęcia, modal się nie renderuje
+  // Jeśli nie wybrano zdjęcia, modal się nie renderuje
   if (!selectedPhoto) return null;
 
   return (
-    // kliknięcie poza modalem zamyka go
+    // Kliknięcie poza modalem zamyka go
     <div
       className={photoStyles.modal_overlay}
       onClick={() => setSelectedPhoto(null)}
     >
-      {/* kliknięcie wewnątrz modala nie propaguje kliknięcia do overlay */}
+      {/* Kliknięcie wewnątrz modala nie propaguje kliknięcia do overlay */}
       <div
         className={photoStyles.modal_photo}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* przycisk zamykający modal */}
+        {/* Przycisk zamykający modal */}
         <span
           className={photoStyles.close_modal}
           onClick={() => setSelectedPhoto(null)}
@@ -28,7 +28,7 @@ const PhotoDetailsModal = ({ selectedPhoto, setSelectedPhoto }) => {
             className={photoStyles.icon_close}
           />
         </span>
-        {/* wyświetlenie zdjęcia i jego szczegółów */}
+        {/* Wyświetlenie zdjęcia i jego szczegółów */}
         <img
           src={`/api/${selectedPhoto.path}`}
           alt={selectedPhoto.title}

@@ -43,7 +43,6 @@ export default function usePasswordChange(refr, closeModal) {
       )
       .then((res) => {
         if (res.status === 200) {
-          // W tym przypadku serwer może sygnalizować błędne hasło
           sendError("Niepoprawne hasło!");
         } else if (res.status === 201) {
           sendSuccess("Zmiana hasła zakończona sukcesem!");
