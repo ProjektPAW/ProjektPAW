@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { sendError, sendSuccess} from "../toast";
+import { AuthContext } from "../AuthContext";
 
 export default function usePublicPhotos(refr) {
   // Stan do karuzeli
@@ -15,6 +16,8 @@ export default function usePublicPhotos(refr) {
   const [fetchNoMore, setFetchNoMore] = useState(false); // Oznacza, że nie ma więcej danych
 
   const debounceTimeoutRef = useRef(null); // Do opóźniania wyszukiwania (debounce)
+  //pobranie danych z authcontext
+  const { user } = useContext(AuthContext);
 
   // Pobiera zdjęcia do karuzeli (na start)
   useEffect(() => {
@@ -86,7 +89,7 @@ export default function usePublicPhotos(refr) {
     axios
         .delete("/api/deletephoto", {
         data: { id_photo: id },
-        headers: { Authorization: localStorage.getItem("jwtToken") },
+        headers: { Authorization: user?.token },
         })
         .then((res) => {
         if (res.status === 200) {

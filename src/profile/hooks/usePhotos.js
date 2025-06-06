@@ -1,9 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef,useContext  } from "react";
 import axios from "axios";
 import { sendError, sendSuccess, sendWarning } from "../../toast";
+import { AuthContext } from "../../AuthContext";
 
 // Hook zarządzający zdjęciami (dodawanie, edycja, usuwanie, pobieranie)
 export default function usePhotos(refr, selectedCatalogId) {
+  //pobranie danych z authcontext
+  const { user } = useContext(AuthContext);
+  const token = user?.token;
   // Lista zdjęć + kontrola paginacji i ładowania
   const [sortedPhotos, setSortedPhotos] = useState([]);
   const [page, setPage] = useState(0); // aktualna strona
@@ -69,7 +73,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     axios
       .get("/api/paged/getuserphotos", {
         params: { page: pageToFetch, sort, search },
-        headers: { Authorization: localStorage.getItem("jwtToken") },
+        headers: { Authorization: token },
       })
       .then((res) => {
         if (res.status === 201) {
@@ -96,7 +100,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     axios
       .get("/api/paged/getphotosincatalog", {
         params: { page: pageToFetch, sort, search, id_catalog: selectedCatalogId },
-        headers: { Authorization: localStorage.getItem("jwtToken") },
+        headers: {Authorization: token },
       })
       .then((res) => {
         if (res.status === 201) {
@@ -146,7 +150,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     axios
       .post("/api/addphoto", data, {
         headers: {
-          Authorization: localStorage.getItem("jwtToken"),
+          Authorization: token,
           "Content-Type": "multipart/form-data",
         },
       })
@@ -204,7 +208,7 @@ export default function usePhotos(refr, selectedCatalogId) {
         { ...editFormData, catalogs_to_add: catalogList },
         {
           headers: {
-            Authorization: localStorage.getItem("jwtToken"),
+           Authorization: token,
             "Content-Type": "application/json",
           },
         }
@@ -234,7 +238,7 @@ export default function usePhotos(refr, selectedCatalogId) {
     axios
       .delete("/api/deletephoto", {
         data: { id_photo: id },
-        headers: { Authorization: localStorage.getItem("jwtToken") },
+        headers: { Authorization: token },
       })
       .then((res) => {
         if (res.status === 200) {

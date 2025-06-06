@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { sendError, sendSuccess, sendWarning } from "../../toast";
+import { AuthContext } from "../../AuthContext";  // import AuthContext
 
 export default function useCatalogs(refr) {
+  //pobranie danych z authcontext
+  const { user } = useContext(AuthContext);
+  const token = user?.token;
   // Stan do listy katalogów
   const [catalogs, setCatalogs] = useState([]);
 
@@ -26,7 +30,7 @@ export default function useCatalogs(refr) {
     const allOption = { id_catalog: -1, name: "All", id_user: null };
     axios
       .get("/api/getusercatalogs", {
-        headers: { Authorization: localStorage.getItem("jwtToken") },
+        headers: { Authorization: token  },
       })
       .then((res) => {
         setCatalogs([allOption, ...res.data]); // Dodaje "All" jako uniwersalną opcję
@@ -54,7 +58,7 @@ export default function useCatalogs(refr) {
     }
     axios
       .post("/api/addcatalog", newCatalog, {
-        headers: { Authorization: localStorage.getItem("jwtToken") },
+        headers: { Authorization: token  },
       })
       .then((res) => {
         if (res.status === 200) {
@@ -85,7 +89,7 @@ export default function useCatalogs(refr) {
       .patch(
         "/api/editcatalog",
         { id_catalog: selectedCatalogId, name: newCatalogName },
-        { headers: { Authorization: localStorage.getItem("jwtToken") } }
+        { headers: { Authorization: token  } }
       )
       .then(() => {
         sendSuccess("Katalog został zaktualizowany!");
@@ -108,7 +112,7 @@ export default function useCatalogs(refr) {
 
     axios
       .delete("/api/deletecatalog", {
-        headers: { Authorization: localStorage.getItem("jwtToken") },
+        headers: { Authorization: token  },
         data: { id_catalog: selectedCatalogId },
       })
       .then(() => {
@@ -131,7 +135,7 @@ export default function useCatalogs(refr) {
     axios
       .get("/api/getphotocatalogs", {
         params: { id_photo: photoId },
-        headers: { Authorization: localStorage.getItem("jwtToken") },
+        headers: { Authorization: token  },
       })
       .then((res) => {
         const arr = Array.isArray(res.data) ? res.data : [];

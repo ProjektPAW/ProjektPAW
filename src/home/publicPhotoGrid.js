@@ -1,7 +1,8 @@
-import React from "react";
+import {React,useContext} from "react";
 import photoStyles from "../styles/photoGalery.module.css";
 import styles from "../styles/home.module.css";
 import deleteImg from "../public/imgs/bin.png";
+import { AuthContext } from "../AuthContext"; 
 
 // Obcina tekst do określonej długości i dodaje "..." jeśli przekracza limit
 const truncate = (str, len) =>
@@ -13,6 +14,8 @@ export default function PublicPhotoGrid({
   onSelectPhoto,
   onDeletePhoto,
 }) {
+  //pobranie danych z authcontext
+  const { user } = useContext(AuthContext);
   // Jeśli brak zdjęć, pokazuje komunikat o braku wyników
   if (!Array.isArray(photos) || photos.length === 0) {
     return (
@@ -40,7 +43,7 @@ export default function PublicPhotoGrid({
               </h4>
             </div>
             {/* Przycisk usuwania dostępny tylko dla roli administratora (rola "1") */}
-            {localStorage.getItem("role") === "1" && (
+            {user?.role === 1 && (
               <button
                 className={styles.delete_btn}
                 onClick={() => onDeletePhoto(photo.id_photo)}

@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { sendError, sendSuccess } from '../../toast'
+import { AuthContext } from "../../AuthContext"; 
 
 export default function usePasswordChange(refr, closeModal) {
+  //pobranie danych z authcontext
+  const { user } = useContext(AuthContext); // pobierz user z kontekstu
+  const token = user?.token; // token z usera
   // Stan formularza zmiany hasła
   const [changePasswordFormData, setChangePasswordFormData] = useState({
     oldPassword: "",
@@ -38,7 +42,7 @@ export default function usePasswordChange(refr, closeModal) {
           newPassword: changePasswordFormData.newPassword,
         },
         {
-          headers: { Authorization: localStorage.getItem("jwtToken") },
+          headers: { Authorization: token },
         }
       )
       .then((res) => {

@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import profileImg from "./public/imgs/profile.png";
 import { sendError, sendSuccess } from "./toast";
 import styles from "./styles/header.module.css";
+import { AuthContext } from "./AuthContext";
 
 function Header({ refr }) {
   // Stan do przechowywania danych formularza logowania
   const [formData, setFormData] = useState({ username: "", password: "" });
-  // Sprawdzamy, czy użytkownik jest zalogowany, na podstawie tokena w localStorage
-  const [isLogged, setIsLogged] = useState(() => !!localStorage.getItem("jwtToken"));
-  // Informacja czy email jest zweryfikowany, też z localStorage
-  const [verifiedEmail, setVerifiedEmail] = useState(localStorage.getItem("emailverified"));
+  //dane z authContextu
+  const { user, isLoggedIn, login, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // Obsługa zmian w polach formularza logowania
   const handleInputChange = (e) => {
@@ -28,16 +28,11 @@ function Header({ refr }) {
           const data = response.data;
           if (response.status === 200) {
             if (data.token) {
-              // Jeśli token zwrócony, zapisujemy dane w localStorage i aktualizujemy stan
-              localStorage.setItem("jwtToken", data.token);
-              localStorage.setItem("username", data.username);
-              localStorage.setItem("email", data.email);
-              localStorage.setItem("role", data.role);
-              localStorage.setItem("emailverified", data.emailverified);
-              setIsLogged(true);
-              setFormData({ username: "", password: "" }); // Czyścimy formularz
+              // Jeśli token zwrócony, zapisanie danych w authContext i przekierowanie na /
+              login(response.data);
               sendSuccess("Zalogowano pomyślnie!");
-              refr(); 
+              refr();
+              navigate("/");
             } else {
               sendError("Logowanie nie powiodło się.");
             }
@@ -56,14 +51,9 @@ function Header({ refr }) {
 
   // Wylogowanie: usuwamy dane z localStorage i aktualizujemy stan
   const handleLogout = () => {
-    localStorage.removeItem("jwtToken");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("role");
-    localStorage.removeItem("emailverified");
+    logout();
     sendSuccess("Wylogowano pomyślnie!");
-    setIsLogged(false);
-    refr();
+    navigate("/");
   };
 
   return (
@@ -72,7 +62,7 @@ function Header({ refr }) {
       <Link to="/">
         <h1 className={styles.title}>Galeria</h1>
       </Link>
-      {!isLogged ? (
+      {!isLoggedIn  ? (
         // Formularz logowania jeśli użytkownik niezalogowany
         <div className={styles.loginForm}>
           <form onSubmit={handleLogin}>
@@ -101,17 +91,17 @@ function Header({ refr }) {
       ) : (
         // Widok po zalogowaniu
         <div className={styles.user_info}>
-           {verifiedEmail=="false" ?(
+           { user?.emailverified===false ?(
               // Jeśli email niezweryfikowany, pokazujemy komunikat
               <div className={styles.verify_email_container}>
                 <p>
-                  Witaj, <strong>{localStorage.getItem("username")}</strong>!
+                  Witaj, <strong>{user?.username}</strong>!
                 </p>
                 <div style={{ color: '#d32f2f', fontWeight: 'bold' , paddingTop: 4 + 'px'}}>Zweryfikuj swój adres e-mail!</div>
               </div>
              ):(
               <p>
-                Witaj, <strong>{localStorage.getItem("username")}</strong>!
+                Witaj, <strong>{user?.username}</strong>!
               </p>
              )
             }

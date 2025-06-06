@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {sendError, sendSuccess} from './toast'
 import axios from "axios";
+import { AuthContext } from "./AuthContext";
 
 function EmailVerification() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  //funkcja aktualizacji weryfikacji tokenu
+  const { updateEmailVerified } = useContext(AuthContext);
 
   useEffect(() => {
     const emailToken = searchParams.get("token");
@@ -19,14 +22,15 @@ function EmailVerification() {
           sendError("Weryfykacja adresu e-mail nie powiodła się!");
         else if (response.status === 201){
           sendSuccess("Weryfikacja adresu e-mail zakończona powodzeniem!");
-          localStorage.setItem("emailverified","true");
+          //aktualizacja statusu weryfikacji tokenu
+          updateEmailVerified("true");
         }
         // Po 2 sekundach przekierowujemy na stronę główną
-        setTimeout(() => window.location.href="/", 2000);
+        setTimeout(() => navigate("/"), 2000);
       })
       .catch(() => {
         sendError("Weryfykacja adresu e-mail nie powiodła się!");
-        setTimeout(() => window.location.href="/", 2000);
+        setTimeout(() => navigate("/"), 2000);
       });
   }, []); // Efekt uruchamia się tylko raz po mountowaniu komponentu
   // Pusty div z wysokością by "zająć miejsce" podczas weryfikacji

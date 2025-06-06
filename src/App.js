@@ -1,6 +1,6 @@
 import './styles/App.css';
-import React, { useEffect, useState } from "react";
-import {BrowserRouter, Routes, Route,Navigate } from "react-router-dom"
+import { useEffect, useState,useContext  } from "react";
+import {BrowserRouter, Routes, Route,Navigate,useNavigate  } from "react-router-dom"
 import Home from './home/home'
 import EmailVerification from './EmailVerification'
 import Register from './register'
@@ -9,13 +9,14 @@ import { ToastContainer} from 'react-toastify';
 import Header from "./header";
 import Footer from "./footer";
 import axios from 'axios';
+import { AuthProvider, AuthContext } from "./AuthContext";
 
-function App() {
+function AppRoutes() {
+  //dane użytkownika z authcontextu
+  const { user, isLoggedIn, login, logout } = useContext(AuthContext);
   const [key, setKey] = useState(0); // refr() – zmienia stan key, co powoduje przeładowanie komponentów z kluczem key
   function refr () {setKey((prevKey) => prevKey + 1);}
-
-   // Sprawdza czy token JWT istnieje w localStorage, by określić, czy użytkownik jest zalogowany
-  const isLoggedIn = localStorage.getItem("jwtToken") !== null;
+  const navigate = useNavigate();
 
   function refreshToken() {
       try{
@@ -27,18 +28,22 @@ function App() {
         })
         .then((response) => {
             if (response.status === 200) {
-                // Status 200 – token nieważny lub sesja wygasła; usuń token i przekieruj do strony głównej
-                localStorage.removeItem("jwtToken");
-                setTimeout(() => window.location.href = "/", 2000);
-                return;
+              //zmiana tokenu przez metodę login z authcontext
+              login({
+                ...user,
+                token: response.data.token,
+              });
             }
             else if(response.status === 201){
-              // Status 201 – nowy token dostępny, podmień go w localStorage
-              localStorage.setItem("jwtToken",response.data.token);
+              //wylogowanie gdy odświeżenie tokenu nie powiodło się
+              logout();
+              navigate("/");
             }
       })
         .catch((error) => {
             console.error("Błąd: ", error);
+            logout();
+            navigate("/");
         });
     } catch (error) {
         console.error("Błąd serwera: " + error.message);
@@ -50,9 +55,9 @@ function App() {
       const intervalId = setInterval(refreshToken, 900000);
       return () => clearInterval(intervalId);
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, user, login, logout, navigate]);
   return (
-    <BrowserRouter>
+    <>
     <Header refr={refr}/>
     <ToastContainer className="toast-position"/>
       <Routes >
@@ -63,6 +68,16 @@ function App() {
         <Route path="/verify-email" element={<EmailVerification key={key} refr={refr} />} />
       </Routes>
       <Footer/>
+      </>
+  );
+}
+//opakowanie w authprovider
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
