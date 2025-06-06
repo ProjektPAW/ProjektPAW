@@ -26,16 +26,6 @@ async function filterGetAllPublicPhotos(sort,search,limit,offset) {
     ,[search,limit,offset]);
 }
 
-async function getUserPhotos(id_user) {
-    return await pool.query(
-        `SELECT p.id_photo, p.title, p.path, p.added, p.description, p.is_private, u.username
-         FROM photos p INNER JOIN users u ON p.id_user = u.id_user
-         WHERE p.id_user = $1
-         ORDER BY p.added DESC`,
-        [id_user]
-    );
-}
-
 async function filterGetUserPhotos(id_user,sort,search,limit,offset) {
     return await pool.query(
         `SELECT p.id_photo, p.title, p.path, p.added, p.description, p.is_private, u.username
@@ -90,7 +80,6 @@ async function adminDeletePhoto(id_photo) {
 module.exports={
     getCarouselPhotos,
     filterGetAllPublicPhotos,
-    getUserPhotos,
     filterGetUserPhotos,
     addPhoto,
     getPhotoById,

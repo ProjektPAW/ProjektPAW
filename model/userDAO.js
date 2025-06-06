@@ -63,7 +63,6 @@ async function updateUserPassword(id_user, hashedNew) {
 }
 
   module.exports={
-    pool,
     createUser,
     selectUserByUnameEmail,
     selectUserByUsername,

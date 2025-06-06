@@ -8,15 +8,6 @@ const pool = new Pool({
     port: process.env.DB_PORT,
 });
 
-async function getPhotosInCatalog(id_catalog,id_user) {
-    return await pool.query(
-        `select p.* 
-        from photos p inner join catalog_photo c_p on p.id_photo=c_p.id_photo
-        where c_p.id_catalog=$1 and id_user=$2;`,
-        [id_catalog,id_user]
-    );
-}
-
 async function filterGetPhotosInCatalog(id_catalog,id_user,sort,search,limit,offset) {
     return await pool.query(
         `select p.* 
@@ -58,7 +49,6 @@ async function checkPhotoAlreadyAdded(id_catalog,id_photo,id_user) {
 }
 
 module.exports={
-    getPhotosInCatalog,
     filterGetPhotosInCatalog,
     deletePhotoFromAllCatalogs,
     addPhotoToCatalog,

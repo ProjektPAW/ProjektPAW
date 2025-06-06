@@ -28,53 +28,32 @@ router.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-router.get("/users", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM users");
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).send("Server error: " + err.message);
-  }
-});
-
 router.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
-  auth.register(username, email, password,res);
+  auth.register(req,res);
 });
 
 router.delete("/deleteuser", async (req, res) => {
-  const token=req.headers.authorization;
-  auth.deleteuser(token,res);
+  auth.deleteuser(req,res);
 });
 
 router.patch("/changepassword", async (req, res) => {
-  const token=req.headers.authorization;
-  auth.changepassword(token,req,res);
+  auth.changepassword(req,res);
 });
 
 router.post("/verify-email", async (req, res) => {
-  const { emailToken } = req.body;
-  auth.verifyEmail(emailToken,res);
+  auth.verifyEmail(req,res);
 });
 
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  auth.login(username, password,res);
-});
-
-router.post("/checktoken", async (req, res) => {
-  const token = req.headers.authorization;
-  auth.checkTokenExpired(token,res);
+  auth.login(req,res);
 });
 
 router.post("/refreshtoken", async (req, res) => {
-  const token = req.headers.authorization;
-  auth.refreshToken(token,res);
+  auth.refreshToken(req,res);
 });
 
 router.get("/getuser", async (req, res) => {
-  const token=req.headers.authorization;
-  auth.getUser(token,res);
+  auth.getUser(req,res);
 });
 
 router.get("/getcarouselphotos", async (req, res) => {
@@ -85,73 +64,47 @@ router.get("/paged/getphotos", async (req, res) => {
   photos.filterGetAllPublicPhotos(req, res);
 });
 
-router.get("/getuserphotos", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.getUserPhotos(token, res);
-});
-
 router.get("/paged/getuserphotos", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.filterGetUserPhotos(token, req, res);
+  photos.filterGetUserPhotos( req, res);
 });
 
 router.post("/addphoto", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.addPhoto(token,req,res);
+  photos.addPhoto(req,res);
 });
 
 router.patch("/editphoto", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.editPhoto(token,req,res);
+  photos.editPhoto(req,res);
 });
 
 router.delete("/deletephoto", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.deletePhoto(token,req,res);
+  photos.deletePhoto(req,res);
 });
 
 // CATALOGS
 router.get("/getusercatalogs", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogs.getUserCatalogs(token,res);
-});
-
-router.get("/getphotocatalogs", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogphoto.getPhotoCatalogs(token,req,res);
+  catalogs.getUserCatalogs(req,res);
 });
 
 router.post("/addcatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogs.addCatalog(token,req,res);
+  catalogs.addCatalog(req,res);
 });
 
 router.patch("/editcatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogs.editCatalog(token,req,res);
+  catalogs.editCatalog(req,res);
 });
 
 router.delete("/deletecatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogs.deleteCatalog(token,req,res);
+  catalogs.deleteCatalog(req,res);
 });
 
 // PHOTOS IN CATALOGS
-router.get("/getphotosincatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogphoto.getPhotosInCatalog(token,req,res);
+router.get("/getphotocatalogs", async (req, res) => {
+  catalogphoto.getPhotoCatalogs(req,res);
 });
 
 router.get("/paged/getphotosincatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogphoto.filterGetPhotosInCatalog(token,req,res);
+  catalogphoto.filterGetPhotosInCatalog(req,res);
 });
-
-router.post("/addphototocatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogphoto.addPhotoToCatalog(token,req,res);
-});
-
 
 // Uruchomienie serwera
 app.listen(PORT, () => {
