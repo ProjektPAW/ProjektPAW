@@ -1,11 +1,11 @@
-import './App.css';
+import './styles/App.css';
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client"
 import {BrowserRouter, Routes, Route,Navigate } from "react-router-dom"
 import Home from './home'
 import EmailVerification from './EmailVerification'
 import Register from './register'
-import Profile from './profile'
+import Profile from './profile/profile'
 import { ToastContainer} from 'react-toastify';
 import Header from "./header";
 import Footer from "./footer";

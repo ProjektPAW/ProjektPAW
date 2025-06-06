@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import profileImg from "./public/imgs/profile.png";
 import { sendError, sendSuccess } from "./toast";
-import styles from "./header.module.css";
+import styles from "./styles/header.module.css";
 
 function Header({ refr }) {
   const [formData, setFormData] = useState({ username: "", password: "" });

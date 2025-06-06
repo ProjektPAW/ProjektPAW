@@ -1,7 +1,7 @@
-import "./stylesGlobal.css";
+import "./styles/stylesGlobal.css";
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import styles from './index.module.css';  // Import the CSS module
+import styles from './styles/index.module.css';  // Import the CSS module
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

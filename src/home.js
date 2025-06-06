@@ -1,6 +1,6 @@
-import styles from './home.module.css';
-import photoStyles from './photoGalery.module.css';
-import './swiper.css';
+import styles from './styles/home.module.css';
+import photoStyles from './styles/photoGalery.module.css';
+import './styles/swiper.css';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import axios from "axios";
