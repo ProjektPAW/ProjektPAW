@@ -22,11 +22,12 @@ async function filterGetAllPublicPhotos(req, res) {
         const {sort, search, page} = req.query;
         if(!page)
             return res.status(200).json({ message: "Page is required" });
-        if(page<0)
+        const pageNumber = parseInt(page, 10);
+        if(!Number.isInteger(pageNumber) || pageNumber<0)
             return res.status(200).json({ message: "Page must be non negative integer" });
         if(possibleSort.includes(sort)==false)
             return res.status(200).json({ message: "Invalid sort" });
-        let offset=page*numPerPage;
+        let offset=pageNumber*numPerPage;
         let newSort = sort||"added desc";
         newSort=newSort.replace("_"," ").toString();
         let newSearch=search||"";
@@ -51,12 +52,16 @@ async function addPhoto(req,res) {
             console.log("No file data");
             return res.status(200).send("No file data");
         }
-
         const {title,is_private,description} = req.body;
         const catalogs_to_add = JSON.parse(req.body.catalogs_to_add);
 
         if(!title || !catalogs_to_add)
             return res.status(200).json({ message: "All fields are required" });
+        if (is_private!="true"&&is_private!="false")
+            return res.status(200).json({ message: "Invalid private checkbox value" });
+        if (typeof description !== "string" || typeof title !== "string")
+            return res.status(200).json({ message: "Description and title must be a string." });
+
         let file=req.files.photo;
         if(!file)
             return res.status(200).json({ message: "Photo file is required" });
@@ -86,7 +91,7 @@ async function addPhoto(req,res) {
         return res.status(201).send("Photo added succesfully");
     }catch(err){
         console.error(err);
-        return res.status(500).send("Server error");
+        return res.status(500).send("Photo adding failed");
     }
 }
 
@@ -100,11 +105,12 @@ async function filterGetUserPhotos(req, res){
         const {sort, search, page} = req.query;
         if(!sort || !page)
             return res.status(200).json({ message: "All fields are required" });
-        if(page<0)
+        const pageNumber = parseInt(page, 10);
+        if(!Number.isInteger(pageNumber) || pageNumber<0)
             return res.status(200).json({ message: "Page must be non negative integer" });
         if(possibleSort.includes(sort)==false)
             return res.status(200).json({ message: "Invalid sort" });
-        let offset=page*numPerPage;
+        let offset=pageNumber*numPerPage;
         let newSort = sort||"added desc";
         newSort=newSort.replace("_"," ").toString();
         let newSearch=search||"";
@@ -129,8 +135,12 @@ async function editPhoto(req, res){
         const {title,is_private,description,id_photo, catalogs_to_add} = req.body;
         if(!title || !id_photo || ! catalogs_to_add)
             return res.status(200).json({ message: "All fields are required" });
-        if(id_photo<0)
+        if(typeof id_photo !== "number" || id_photo<0)
             return res.status(200).json({ message: "Photo ID must be positive integer" });
+        if (typeof is_private !== "boolean" && is_private !== 0 && is_private !== 1)
+            return res.status(200).json({ message: "Invalid private checkbox value" });
+        if (typeof description !== "string" || typeof title !== "string")
+            return res.status(200).json({ message: "Description and title must be a string." });
         let result = await photodao.getPhotoById(id_photo,id_user);
         if(result.rowCount<=0)
             return res.status(200).send("Photo not found");
@@ -161,7 +171,7 @@ async function editPhoto(req, res){
         }
     }catch(err){
         console.log(e);
-        return res.status(201).json({message:"Photo get failed"});
+        return res.status(201).json({message:"Photo edition failed"});
     }
 }
 

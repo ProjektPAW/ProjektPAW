@@ -98,8 +98,8 @@ async function changepassword(req,res){
 async function verifyEmail(req,res){
     try{
         const { emailToken } = req.body;
-        if(!emailToken)
-            return res.status(200).json({ message: "All fields are required" });
+        if(!emailToken || typeof emailToken !== "string" || emailToken.trim() === "")
+            return res.status(200).json({ message: "email token invalid" });
         const result = await userdao.verifyEmail(emailToken);
         if(result.rowCount>0)
             return res.status(201).send("email verification successful.");
@@ -116,6 +116,8 @@ async function login(req,res) {
         const { username, password } = req.body;
         if (!username || !password )
             return res.status(200).json({ message: "All fields are required" });
+        if (typeof username !== "string" || username.trim() === "")
+            return res.status(200).json({ message: "invalid username" });
         const result = await userdao.selectUserByUsername(username);
         if(result.rowCount==0){
             res.status(200).json({message:"Invalid username."});
