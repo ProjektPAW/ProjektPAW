@@ -1,8 +1,8 @@
-import photoStyles from "./styles/photoGalery.module.css";
-import styles from "./styles/profile.module.css";
-import privateImg from "./public/imgs/private.png";
-import editImg from "./public/imgs/edit.png";
-import deleteImg from "./public/imgs/bin.png";
+import photoStyles from "../styles/photoGalery.module.css";
+import styles from "../styles/profile.module.css";
+import privateImg from "../public/imgs/private.png";
+import editImg from "../public/imgs/edit.png";
+import deleteImg from "../public/imgs/bin.png";
 
 const truncate = (str, len) => (str.length > len ? str.slice(0, len) + "..." : str);
 

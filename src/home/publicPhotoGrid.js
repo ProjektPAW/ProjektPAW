@@ -1,7 +1,7 @@
 import React from "react";
 import photoStyles from "../styles/photoGalery.module.css";
 import styles from "../styles/home.module.css";
-import closeImg from "../public/imgs/close.png";
+import deleteImg from "../public/imgs/bin.png";
 
 const truncate = (str, len) =>
   str.length > len ? str.slice(0, len) + "..." : str;
@@ -42,7 +42,7 @@ export default function PublicPhotoGrid({
                 onClick={() => onDeletePhoto(photo.id_photo)}
               >
                 <img
-                  src={closeImg}
+                  src={deleteImg}
                   alt="Usuń"
                   className={styles.icon_delete}
                 />

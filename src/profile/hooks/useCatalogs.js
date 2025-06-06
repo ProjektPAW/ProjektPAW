@@ -133,17 +133,20 @@ export default function useCatalogs(refr) {
         headers: { Authorization: localStorage.getItem("jwtToken") },
       })
       .then((res) => {
-        const tempIds = res.data.map((c) => c.id_catalog);
+        const arr = Array.isArray(res.data) ? res.data : [];
+        const tempIds = arr.map((c) => c.id_catalog);
         const catalogObj = tempIds.reduce((acc, idC) => {
           acc[idC] = true;
           return acc;
         }, {});
+
         setCatalogList(catalogObj);
         setCheckedCatalogsList(tempIds);
         setCatalogsLoaded(true);
       })
       .catch((err) => {
         console.error("Błąd pobierania katalogów zdjęcia:", err);
+        setCatalogsLoaded(true);
       });
   };
 

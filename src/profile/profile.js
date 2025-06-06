@@ -12,7 +12,7 @@ import PhotoEditModal from "./modals/photoEditModal";
 import AddCatalogModal from "./modals/addCatalogModal";
 import EditCatalogModal from "./modals/editCatalogModal";
 import ChangePasswordModal from "./modals/changePasswordModal";
-import PhotoGrid from "../photoGrid";
+import PhotoGrid from "./photoGrid";
 import ProfileCard from "./profileCard";
 import SearchSortBar from "../searchSortBar";
 
