@@ -7,7 +7,7 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
 });
-
+// Zwraca zdjęcia z danego katalogu użytkownika, przefiltrowane i posortowane
 async function filterGetPhotosInCatalog(id_catalog,id_user,sort,search,limit,offset) {
     return await pool.query(
         `select p.* 
@@ -17,28 +17,28 @@ async function filterGetPhotosInCatalog(id_catalog,id_user,sort,search,limit,off
         [id_catalog,id_user,search,limit,offset]
     );
 }
-
+// Zwraca wszystkie katalogi dla danego zdjęcia
 async function getPhotoCatalogs(id_photo) {
     return await pool.query(
         `select * from catalog_photo where id_photo=$1`,
         [id_photo]
     );
 }
-
+// Dodaje zdjęcie do katalogu (relacja wiele-do-wielu)
 async function addPhotoToCatalog(id_catalog,id_photo) {
     return await pool.query(
         `insert into catalog_photo(id_photo,id_catalog) values($1,$2);`,
         [id_photo,id_catalog]
     );
 }
-
+// Usuwa wszystkie przypisania zdjęcia do katalogów
 async function deletePhotoFromAllCatalogs(id_photo) {
     return await pool.query(
         `delete from catalog_photo where id_photo=$1`,
         [id_photo]
     );
 }
-
+// Sprawdza, czy dane zdjęcie już zostało przypisane do katalogu przez użytkownika
 async function checkPhotoAlreadyAdded(id_catalog,id_photo,id_user) {
     return await pool.query(
         `select * 
