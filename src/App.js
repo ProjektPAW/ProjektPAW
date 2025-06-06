@@ -1,8 +1,7 @@
 import './styles/App.css';
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom/client"
 import {BrowserRouter, Routes, Route,Navigate } from "react-router-dom"
-import Home from './home'
+import Home from './home/home'
 import EmailVerification from './EmailVerification'
 import Register from './register'
 import Profile from './profile/profile'
