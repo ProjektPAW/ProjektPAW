@@ -1,8 +1,8 @@
-import styles from "./styles/register.module.css";
+import styles from "../styles/register.module.css";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {sendError, sendSuccess, sendWarning} from './toast'
+import {sendError, sendSuccess, sendWarning} from '../components/toast'
 import axios from "axios";
 
 function Register() {

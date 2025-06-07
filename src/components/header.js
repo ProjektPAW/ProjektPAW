@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import profileImg from "./public/imgs/profile.png";
+import profileImg from "../public/imgs/profile.png";
 import { sendError, sendSuccess } from "./toast";
-import styles from "./styles/header.module.css";
-import { AuthContext } from "./AuthContext";
+import styles from "../styles/header.module.css";
+import { AuthContext } from "../AuthContext";
 
 function Header({ refr }) {
   // Stan do przechowywania danych formularza logowania

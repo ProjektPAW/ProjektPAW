@@ -2,12 +2,12 @@ import './styles/App.css';
 import { useEffect, useState,useContext  } from "react";
 import {BrowserRouter, Routes, Route,Navigate,useNavigate  } from "react-router-dom"
 import Home from './home/home'
-import EmailVerification from './EmailVerification'
-import Register from './register'
+import EmailVerification from './emailverification/EmailVerification'
+import Register from './register/register'
 import Profile from './profile/profile'
 import { ToastContainer} from 'react-toastify';
-import Header from "./header";
-import Footer from "./footer";
+import Header from "./components/header";
+import Footer from "./components/footer";
 import axios from 'axios';
 import { AuthProvider, AuthContext } from "./AuthContext";
 

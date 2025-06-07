@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import axios from "axios";
-import { sendError, sendSuccess } from '../../toast'
+import { sendError, sendSuccess } from '../../components/toast'
 import { AuthContext } from "../../AuthContext"; 
 
 export default function usePasswordChange(refr, closeModal) {

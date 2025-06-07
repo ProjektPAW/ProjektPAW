@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {sendError, sendSuccess} from './toast'
+import {sendError, sendSuccess} from '../components/toast'
 import axios from "axios";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "../AuthContext";
 
 function EmailVerification() {
   const [searchParams] = useSearchParams();

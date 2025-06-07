@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef,useContext  } from "react";
 import axios from "axios";
-import { sendError, sendSuccess, sendWarning } from "../../toast";
+import { sendError, sendSuccess, sendWarning } from "../../components/toast";
 import { AuthContext } from "../../AuthContext";
 
 // Hook zarządzający zdjęciami (dodawanie, edycja, usuwanie, pobieranie)

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useContext } from "react";
-import {sendError, sendSuccess} from '../../toast'
+import {sendError, sendSuccess} from '../../components/toast'
 import { AuthContext } from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
 
