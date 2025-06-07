@@ -7,7 +7,7 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
   });
-
+// Zwraca 5 najnowszych publicznych zdjęć do karuzeli
 async function getCarouselPhotos() {
     return await pool.query(
         "select p.id_photo, p.title, p.path, p.added, p.description, u.username \
@@ -16,7 +16,7 @@ async function getCarouselPhotos() {
         limit 5"
     );
 }
-
+// Zwraca publiczne zdjęcia posortowane i przefiltrowane
 async function filterGetAllPublicPhotos(sort,search,limit,offset) {
     return await pool.query(
         `select p.id_photo, p.title, p.path, p.added, p.description, u.username
@@ -25,17 +25,7 @@ async function filterGetAllPublicPhotos(sort,search,limit,offset) {
         order by `+sort+` limit $2 offset $3`
     ,[search,limit,offset]);
 }
-
-async function getUserPhotos(id_user) {
-    return await pool.query(
-        `SELECT p.id_photo, p.title, p.path, p.added, p.description, p.is_private, u.username
-         FROM photos p INNER JOIN users u ON p.id_user = u.id_user
-         WHERE p.id_user = $1
-         ORDER BY p.added DESC`,
-        [id_user]
-    );
-}
-
+// Zwraca zdjęcia użytkownika posortowane i przefiltrowane
 async function filterGetUserPhotos(id_user,sort,search,limit,offset) {
     return await pool.query(
         `SELECT p.id_photo, p.title, p.path, p.added, p.description, p.is_private, u.username
@@ -45,27 +35,28 @@ async function filterGetUserPhotos(id_user,sort,search,limit,offset) {
         [id_user,search,limit,offset]
     );
 }
-
+// Dodaje nowe zdjęcie do bazy danych i zwraca jego ID
 async function addPhoto(title,path,is_private,added,description,id_user) {
     return await pool.query(
         "insert into photos(title,path,is_private,added,description,id_user) values($1,$2,$3,$4,$5,$6) RETURNING id_photo",
         [title,path,is_private,added,description,id_user]
     );
 }
-
+// Pobiera dane zdjęcia, jeśli należy do danego użytkownika
 async function getPhotoById(id_photo, id_user) {
     return await pool.query(
         "SELECT * FROM photos WHERE id_photo = $1 and id_user = $2",
         [id_photo,id_user]
     );
 }
+// Administrator może pobrać zdjęcie niezależnie od właściciela
 async function adminGetPhotoById(id_photo) {
     return await pool.query(
         "SELECT * FROM photos WHERE id_photo = $1",
         [id_photo]
     );
 }
-
+// Edytuje dane zdjęcia
 async function editPhoto(title,is_private,description,id_photo,path) {
     let result = await pool.query(
         "update photos set title=$1, is_private=$2, description=$3, path=$4  \
@@ -73,13 +64,14 @@ async function editPhoto(title,is_private,description,id_photo,path) {
         [title,is_private,description,path,id_photo]
     );
 }
-
+// Usuwa zdjęcie jeśli należy do użytkownika
 async function deletePhoto(id_photo,id_user) {
     let result = await pool.query(
         "delete from photos where id_photo=$1 and id_user=$2",
         [id_photo,id_user]
     );
 }
+// Administrator może usunąć dowolne zdjęcie bez sprawdzania właściciela
 async function adminDeletePhoto(id_photo) {
     let result = await pool.query(
         "delete from photos where id_photo=$1",
@@ -90,7 +82,6 @@ async function adminDeletePhoto(id_photo) {
 module.exports={
     getCarouselPhotos,
     filterGetAllPublicPhotos,
-    getUserPhotos,
     filterGetUserPhotos,
     addPhoto,
     getPhotoById,

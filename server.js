@@ -1,163 +1,143 @@
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
 const auth = require("./controlers/auth");
 const photos = require("./controlers/photos");
 const catalogs = require("./controlers/catalogs");
 const catalogphoto = require("./controlers/catalogPhoto");
 const fileUpload = require("express-fileupload");
-const router = express.Router()
+const router = express.Router();
 const path = require('path');
 
+// Inicjalizacja aplikacji Express
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Middleware do obsługi żądań JSON
 app.use(express.json());
+// Middleware do obsługi uploadu plików
 app.use(fileUpload({
-    // Configure file uploads with maximum file size 10MB
+    // Maksymalny rozmiar przesyłanego pliku – 10 MB
     limits: { fileSize: 10 * 1024 * 1024 },
 
-    // Temporarily store uploaded files to disk, rather than buffering in memory
+    // Ustawienie na zapisywanie plików tymczasowo na dysku zamiast w pamięci
     useTempFiles : true,
     tempFileDir : '/tmp/'
 }));
+// Serwowanie statycznych plików z katalogu "files" pod endpointem /api/files
 app.use('/api/files',express.static('./files/'));
+// Główna ścieżka API – przekierowuje wszystkie pozostałe endpointy do routera
 app.use('/api', router);
 
+// Serwowanie zbudowanego frontendu
 app.use(express.static(path.join(__dirname, 'build')));
-
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-router.get("/users", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM users");
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).send("Server error: " + err.message);
-  }
-});
+// AUTH – Obsługa użytkowników i autoryzacji
 
+// Rejestracja nowego użytkownika
 router.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
-  auth.register(username, email, password,res);
+  auth.register(req,res);
 });
 
+// Usuwanie konta użytkownika
 router.delete("/deleteuser", async (req, res) => {
-  const token=req.headers.authorization;
-  auth.deleteuser(token,res);
+  auth.deleteuser(req,res);
 });
 
+// Zmiana hasła użytkownika
 router.patch("/changepassword", async (req, res) => {
-  const token=req.headers.authorization;
-  auth.changepassword(token,req,res);
+  auth.changepassword(req,res);
 });
 
+// Weryfikacja adresu e-mail (po kliknięciu w link aktywacyjny)
 router.post("/verify-email", async (req, res) => {
-  const { emailToken } = req.body;
-  auth.verifyEmail(emailToken,res);
+  auth.verifyEmail(req,res);
 });
 
+// Logowanie użytkownika
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  auth.login(username, password,res);
+  auth.login(req,res);
 });
 
-router.post("/checktoken", async (req, res) => {
-  const token = req.headers.authorization;
-  auth.checkTokenExpired(token,res);
-});
-
+// Odświeżenie tokenu JWT
 router.post("/refreshtoken", async (req, res) => {
-  const token = req.headers.authorization;
-  auth.refreshToken(token,res);
+  auth.refreshToken(req,res);
 });
 
+// Pobranie danych o aktualnie zalogowanym użytkowniku
 router.get("/getuser", async (req, res) => {
-  const token=req.headers.authorization;
-  auth.getUser(token,res);
+  auth.getUser(req,res);
 });
 
+// PHOTOS – Obsługa zdjęć
+
+// Pobranie najnowszych 5 zdjęć publicznych do karuzeli (slidera)
 router.get("/getcarouselphotos", async (req, res) => {
   photos.getCarouselPhotos(res);
 });
 
+// Paginacja publicznych zdjęć z sortowaniem i wyszukiwaniem
 router.get("/paged/getphotos", async (req, res) => {
   photos.filterGetAllPublicPhotos(req, res);
 });
 
-router.get("/getuserphotos", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.getUserPhotos(token, res);
-});
-
+// Paginacja zdjęć użytkownia z sortowaniem i wyszukiwaniem
 router.get("/paged/getuserphotos", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.filterGetUserPhotos(token, req, res);
+  photos.filterGetUserPhotos( req, res);
 });
 
+// Dodawanie nowego zdjęcia
 router.post("/addphoto", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.addPhoto(token,req,res);
+  photos.addPhoto(req,res);
 });
 
+// Edycja danych zdjęcia (tytuł, opis, prywatność, katalogi)
 router.patch("/editphoto", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.editPhoto(token,req,res);
+  photos.editPhoto(req,res);
 });
 
+// Usuwanie zdjęcia przez użytkownika lub administratora
 router.delete("/deletephoto", async (req, res) => {
-  const token=req.headers.authorization;
-  photos.deletePhoto(token,req,res);
+  photos.deletePhoto(req,res);
 });
 
-// CATALOGS
+// CATALOGS – Obsługa katalogów (albumów) użytkownika
+
+// Pobranie listy katalogów użytkownika
 router.get("/getusercatalogs", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogs.getUserCatalogs(token,res);
+  catalogs.getUserCatalogs(req,res);
 });
 
-router.get("/getphotocatalogs", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogphoto.getPhotoCatalogs(token,req,res);
-});
-
+// Dodanie nowego katalogu
 router.post("/addcatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogs.addCatalog(token,req,res);
+  catalogs.addCatalog(req,res);
 });
 
+// Edycja katalogu, zmiana nazwy
 router.patch("/editcatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogs.editCatalog(token,req,res);
+  catalogs.editCatalog(req,res);
 });
 
+// Usunięcie katalogu użytkownika
 router.delete("/deletecatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogs.deleteCatalog(token,req,res);
+  catalogs.deleteCatalog(req,res);
 });
 
-// PHOTOS IN CATALOGS
-router.get("/getphotosincatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogphoto.getPhotosInCatalog(token,req,res);
+// PHOTOS IN CATALOGS – Obsługa przypisania zdjęć do katalogów
+
+// Pobranie listy katalogów, w których znajduje się zdjęcie
+router.get("/getphotocatalogs", async (req, res) => {
+  catalogphoto.getPhotoCatalogs(req,res);
 });
 
+// Paginacja zdjęć w konkretnym katalogu użytkownika
 router.get("/paged/getphotosincatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogphoto.filterGetPhotosInCatalog(token,req,res);
+  catalogphoto.filterGetPhotosInCatalog(req,res);
 });
-
-router.post("/addphototocatalog", async (req, res) => {
-  const token=req.headers.authorization;
-  catalogphoto.addPhotoToCatalog(token,req,res);
-});
-
 
 // Uruchomienie serwera
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
