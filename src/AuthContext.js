@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null); // zawiera dane użytkownika
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
   // Przy starcie aplikacji sprawdzamy localStorage pod kątem sesji użytkownika
   useEffect(() => {
     // Przy starcie aplikacji sprawdź localStorage
@@ -21,6 +22,7 @@ export function AuthProvider({ children }) {
       setUser({ token, username, email, role, emailverified: emailverified === "true" });
       setIsLoggedIn(true);
     }
+    setLoading(false); // zakończ ładowanie
   }, []);
 
   // Funkcja logowania — zapisuje dane w localStorage i aktualizuje stan
@@ -50,7 +52,7 @@ export function AuthProvider({ children }) {
 };
   // Udostępnienie funkcji i danych w kontekście
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, login, logout, updateEmailVerified  }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, login, logout, updateEmailVerified, loading }}>
       {children}
     </AuthContext.Provider>
   );

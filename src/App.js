@@ -13,7 +13,7 @@ import { AuthProvider, AuthContext } from "./AuthContext";
 
 function AppRoutes() {
   //dane użytkownika z authcontextu
-  const { user, isLoggedIn, login, logout } = useContext(AuthContext);
+  const { user, isLoggedIn, login, logout, loading } = useContext(AuthContext);
   const [key, setKey] = useState(0); // refr() – zmienia stan key, co powoduje przeładowanie komponentów z kluczem key
   function refr () {setKey((prevKey) => prevKey + 1);}
   const navigate = useNavigate();
@@ -56,6 +56,8 @@ function AppRoutes() {
       return () => clearInterval(intervalId);
     }
   }, [isLoggedIn, user, login, logout, navigate]);
+
+  if (loading) return null;
   return (
     <>
     <Header refr={refr}/>
